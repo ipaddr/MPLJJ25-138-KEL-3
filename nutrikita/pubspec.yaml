@@ -1,6 +1,6 @@
 name: nutrikita
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -11,14 +11,20 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.0.0 # versi yang valid, ganti ^1.0.0 jika perlu versi lain
+  test: ^1.0.0
 
 flutter:
+
   uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/logo/logonutrikita.png
 
   fonts:
     - family: Poppins
