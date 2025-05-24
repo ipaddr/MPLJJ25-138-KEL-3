@@ -9,6 +9,7 @@ class RegisterScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text('Daftar', style: theme.appBarTheme.titleTextStyle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -16,114 +17,125 @@ class RegisterScreen extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 5),
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset('assets/logo/logonutrikita.png', height: 150),
-                    const SizedBox(height: 10),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset('assets/logos/nutrikita.png', height: 120),
+                const SizedBox(height: 8),
 
-              // Nama Field
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Nama',
-                  style:
-                      theme
-                          .textTheme
-                          .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Masukkan nama Anda', // Perbaikan ejaan
-                ),
-              ),
-              const SizedBox(height: 18), // Spasi antar field
-              // NISN Field
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text('NISN', style: theme.textTheme.labelLarge),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                keyboardType:
-                    TextInputType.number, // Sesuaikan dengan input NISN
-                decoration: const InputDecoration(
-                  hintText: 'Masukkan NISN Anda', // Perbaikan ejaan
-                ),
-              ),
-              const SizedBox(height: 18),
+                Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                  color: theme.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nama Field
+                        Text('Nama Lengkap', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan nama lengkap Anda',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
 
-              // Email Field
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Email', style: theme.textTheme.labelLarge),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                keyboardType:
-                    TextInputType.emailAddress, // Sesuaikan dengan input email
-                decoration: const InputDecoration(
-                  hintText: 'Masukkan email Anda', // Perbaikan ejaan
-                ),
-              ),
-              const SizedBox(height: 18),
+                        Text('NISN', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan NISN Anda',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
 
-              // Password Field
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Password', style: theme.textTheme.labelLarge),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'Masukkan password Anda', // Perbaikan ejaan
+                        Text('Email', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan email Anda',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        Text('Kata Sandi', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Buat kata sandi Anda',
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Minimal 8 karakter',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // TODO: Implementasi logika pendaftaran di sini
+
+                              Navigator.pop(context);
+                            },
+
+                            child: const Text('DAFTAR SEKARANG'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Minimal 8 karakter',
-                  style:
-                      theme
-                          .textTheme
-                          .bodySmall, // Menggunakan gaya teks bodySmall dari TextTheme
-                ),
-              ),
-              const SizedBox(height: 32), // Spasi sebelum tombol
-              // Tombol Daftar Sekarang
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
+
+                const SizedBox(height: 32),
+
+                TextButton(
                   onPressed: () {
-                    // TODO: Implementasi logika pendaftaran
-                    Navigator.pop(
-                      context,
-                    ); // Contoh: Kembali ke halaman login setelah daftar
+                    Navigator.pop(context);
                   },
-                  // Style akan otomatis diambil dari ElevatedButtonThemeData di ThemeData
-                  // yang sudah kita set dengan AppColors.secondaryOrange
-                  child: const Text(
-                    'DAFTAR SEKARANG',
-                  ), // Warna dan style teks diambil dari tema
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'Sudah punya akun? ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onBackground,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Masuk disini',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),

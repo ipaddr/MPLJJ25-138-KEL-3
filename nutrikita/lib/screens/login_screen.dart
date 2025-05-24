@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
 import 'register_screen.dart';
 
 class LoginPage extends StatelessWidget {
@@ -17,6 +16,7 @@ class LoginPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        title: Text('Masuk', style: theme.appBarTheme.titleTextStyle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -25,110 +25,178 @@ class LoginPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 5),
-                // Logo NutriKita
-                Center(
-                  child: Column(
-                    children: [
-                      Image.asset('assets/logo/logonutrikita.png', height: 150),
-                      const SizedBox(height: 12),
-                    ],
+                Image.asset('assets/logos/nutrikita.png', height: 120),
+                const SizedBox(height: 8),
+                Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ),
+                  elevation: 4,
+                  color: theme.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Email Field
+                        Text('Email', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan email Anda',
+                          ),
+                        ),
 
-                const SizedBox(height: 12), // Spasi sebelum form
-                // Email Field
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Email',
-                    style:
-                        theme
-                            .textTheme
-                            .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ), // Sedikit lebih banyak spasi vertikal
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText:
-                        'Masukkan email Anda', // Perbaikan ejaan "anda" menjadi "Anda"
-                  ),
-                ),
+                        const SizedBox(height: 12),
 
-                const SizedBox(height: 24), // Spasi antar field
-                // Password Field
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Password',
-                    style:
-                        theme
-                            .textTheme
-                            .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: 'Masukkan password Anda', // Perbaikan ejaan
-                  ),
-                ),
-                const SizedBox(height: 6), // Spasi ke teks "Minimal 8 karakter"
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Minimal 8 karakter',
-                    style:
-                        theme
-                            .textTheme
-                            .bodySmall, // Menggunakan gaya teks bodySmall dari TextTheme
-                  ),
-                ),
+                        // Password Field
+                        Text('Password', style: theme.textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Masukkan password Anda',
+                          ),
+                        ),
+                        const SizedBox(height: 4),
 
-                const SizedBox(height: 32), // Spasi sebelum tombol
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Minimal 8 karakter',
+                              style: theme.textTheme.bodySmall,
                             ),
-                          );
-                        },
-                        // Style akan otomatis diambil dari OutlinedButtonThemeData di ThemeData
-                        child: const Text('Daftar'),
-                      ),
+                            TextButton(
+                              onPressed: () {
+                                // TODO: Implementasi lupa password
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                'Lupa Password',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Tombol Masuk
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // TODO: Implementasi logika login
+                            },
+                            child: const Text('Masuk'),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Text(
+                                'Masuk dengan',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Tombol Google Sign-in
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // TODO: Implementasi login dengan Google
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              side: BorderSide(
+                                color: theme.colorScheme.outline,
+                                width: 1.5,
+                              ),
+                              foregroundColor: theme.colorScheme.onSurface,
+                            ),
+                            icon: Image.asset(
+                              'assets/logos/google.png',
+                              height: 24,
+                            ),
+                            label: const Text(
+                              'Google',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Implementasi logika login
-                        },
-                        // Style akan otomatis diambil dari ElevatedButtonThemeData di ThemeData
-                        child: const Text('Masuk'),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
 
-                const SizedBox(height: 48), // Spasi sebelum footer
-                // Footer Text
-                Text(
-                  'Masuk untuk mulai memantau, mendukung, dan menyehatkan anak Indonesia.', // Teks yang lebih lengkap
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.darkText.withOpacity(
-                      0.6,
-                    ), // Sedikit lebih transparan dari darkText
+                const SizedBox(height: 32),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    );
+                  },
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'Belum punya akun? ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onBackground,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Daftar disini',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),

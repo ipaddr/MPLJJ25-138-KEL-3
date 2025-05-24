@@ -25,7 +25,8 @@ flutter:
 
   assets:
     - assets/fonts/
-    - assets/logo/logonutrikita.png
+    - assets/logos/nutrikita.png
+    - assets/logos/google.png
 
   fonts:
     - family: Poppins

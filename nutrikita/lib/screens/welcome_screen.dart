@@ -18,7 +18,7 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
-              Image.asset('assets/logo/logonutrikita.png', height: 300),
+              Image.asset('assets/logos/nutrikita.png', height: 300),
               const SizedBox(height: 16),
 
               const SizedBox(height: 24),
