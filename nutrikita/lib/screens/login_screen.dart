@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 import 'register_screen.dart';
 
 class LoginPage extends StatelessWidget {
@@ -6,13 +7,12 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE5F1FB),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -21,94 +21,75 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                // Logo
+                const SizedBox(height: 5),
+                // Logo NutriKita
                 Center(
                   child: Column(
                     children: [
-                      Image.asset('assets/logo/logonutrikita.png', height: 80),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'NutriKita',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blueAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Image.asset('assets/logo/logonutrikita.png', height: 150),
+                      const SizedBox(height: 12),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 40),
-
+                const SizedBox(height: 12), // Spasi sebelum form
                 // Email Field
-                const Align(
-                  // Mengubah ke const karena tidak ada perubahan state
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Email',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style:
+                        theme
+                            .textTheme
+                            .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(
+                  height: 10,
+                ), // Sedikit lebih banyak spasi vertikal
                 TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan email anda',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                  decoration: const InputDecoration(
+                    hintText:
+                        'Masukkan email Anda', // Perbaikan ejaan "anda" menjadi "Anda"
                   ),
                 ),
 
-                const SizedBox(height: 16),
-
+                const SizedBox(height: 24), // Spasi antar field
                 // Password Field
-                const Align(
-                  // Mengubah ke const karena tidak ada perubahan state
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Password',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style:
+                        theme
+                            .textTheme
+                            .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 TextFormField(
                   obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan password anda',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                  decoration: const InputDecoration(
+                    hintText: 'Masukkan password Anda', // Perbaikan ejaan
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Align(
+                const SizedBox(height: 6), // Spasi ke teks "Minimal 8 karakter"
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Minimal 8 karakter',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style:
+                        theme
+                            .textTheme
+                            .bodySmall, // Menggunakan gaya teks bodySmall dari TextTheme
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
+                const SizedBox(height: 32), // Spasi sebelum tombol
                 // Buttons
                 Row(
                   children: [
@@ -122,54 +103,35 @@ class LoginPage extends StatelessWidget {
                             ),
                           );
                         },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: const BorderSide(color: Color(0xFF3B35D3)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Daftar',
-                          style: TextStyle(
-                            color: Color(0xFF3B35D3),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        // Style akan otomatis diambil dari OutlinedButtonThemeData di ThemeData
+                        child: const Text('Daftar'),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B35D3),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Masuk',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        onPressed: () {
+                          // TODO: Implementasi logika login
+                        },
+                        // Style akan otomatis diambil dari ElevatedButtonThemeData di ThemeData
+                        child: const Text('Masuk'),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(
-                  height: 40,
-                ), // Contoh pengganti Spacer(), sesuaikan nilai ini
+                const SizedBox(height: 48), // Spasi sebelum footer
                 // Footer Text
-                const Text(
-                  'Masuk untuk mulai memantau, mendukung, dan menyehatkan',
+                Text(
+                  'Masuk untuk mulai memantau, mendukung, dan menyehatkan anak Indonesia.', // Teks yang lebih lengkap
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.darkText.withOpacity(
+                      0.6,
+                    ), // Sedikit lebih transparan dari darkText
+                  ),
                 ),
-                const SizedBox(
-                  height: 24,
-                ), // Memberikan sedikit ruang di bawah footer
+                const SizedBox(height: 24),
               ],
             ),
           ),

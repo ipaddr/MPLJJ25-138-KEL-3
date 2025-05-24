@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFD6ECFA),
+      backgroundColor: theme.scaffoldBackgroundColor,
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -14,54 +18,35 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
-              Image.asset(
-                'assets/logo/logonutrikita.png',
-                height: 120,
-              ),
+              Image.asset('assets/logo/logonutrikita.png', height: 300),
               const SizedBox(height: 16),
-              const Text(
-                'NutriKita',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Color(0xFF2A4C7C),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
               const SizedBox(height: 24),
-              const Text(
-                'Selamat Datang Di Nutri Kita - Bersama\nMembantu Tumbuh Kembang Anak',
+              Text(
+                'Selamat Datang Di NutriKita \n Bersama Membantu Tumbuh Kembang Anak',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.darkText,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A2DBE),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');
                   },
-                  child: const Text(
-                    'MULAI SEKARANG',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('MULAI SEKARANG'),
                 ),
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Bersama Indonesia Tumbuh, Cerdan Dan Hidup Bahagia',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF7A7A7A),
+              Text(
+                'Bersama Indonesia Tumbuh, Cerdas, dan Hidup Bahagia',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.darkText.withOpacity(0.6),
+                  fontSize: 10,
                 ),
                 textAlign: TextAlign.center,
               ),

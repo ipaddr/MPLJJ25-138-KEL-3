@@ -5,13 +5,12 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE5F1FB),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -19,159 +18,111 @@ class RegisterScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 5),
               Center(
                 child: Column(
                   children: [
-                    Image.asset('assets/logo/logonutrikita.png', height: 60),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'NutriKita',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent,
-                      ),
-                    ),
+                    Image.asset('assets/logo/logonutrikita.png', height: 150),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
 
-              // Nama
-              const Align(
+              // Nama Field
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Nama',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style:
+                      theme
+                          .textTheme
+                          .labelLarge, // Menggunakan gaya teks labelLarge dari TextTheme
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Masukkan nama anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                decoration: const InputDecoration(
+                  hintText: 'Masukkan nama Anda', // Perbaikan ejaan
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // NISN
-              const Align(
+              const SizedBox(height: 18), // Spasi antar field
+              // NISN Field
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'NISN',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                child: Text('NISN', style: theme.textTheme.labelLarge),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Masukkan NISN anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                keyboardType:
+                    TextInputType.number, // Sesuaikan dengan input NISN
+                decoration: const InputDecoration(
+                  hintText: 'Masukkan NISN Anda', // Perbaikan ejaan
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              // Email
-              const Align(
+              // Email Field
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'Email',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Email', style: theme.textTheme.labelLarge),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Masukkan email anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                keyboardType:
+                    TextInputType.emailAddress, // Sesuaikan dengan input email
+                decoration: const InputDecoration(
+                  hintText: 'Masukkan email Anda', // Perbaikan ejaan
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              // Password
-              const Align(
+              // Password Field
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'Password',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Password', style: theme.textTheme.labelLarge),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               TextFormField(
                 obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Masukkan password anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                decoration: const InputDecoration(
+                  hintText: 'Masukkan password Anda', // Perbaikan ejaan
                 ),
               ),
-              const SizedBox(height: 4),
-              const Align(
+              const SizedBox(height: 6),
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Minimal 8 karakter',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style:
+                      theme
+                          .textTheme
+                          .bodySmall, // Menggunakan gaya teks bodySmall dari TextTheme
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // Tombol Masuk
+              const SizedBox(height: 32), // Spasi sebelum tombol
+              // Tombol Daftar Sekarang
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B35D3),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  onPressed: () {
+                    // TODO: Implementasi logika pendaftaran
+                    Navigator.pop(
+                      context,
+                    ); // Contoh: Kembali ke halaman login setelah daftar
+                  },
+                  // Style akan otomatis diambil dari ElevatedButtonThemeData di ThemeData
+                  // yang sudah kita set dengan AppColors.secondaryOrange
                   child: const Text(
-                    'Masuk',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                    'DAFTAR SEKARANG',
+                  ), // Warna dan style teks diambil dari tema
                 ),
               ),
-              const SizedBox(
-                height: 24,
-              ), // Tambahkan ruang ekstra di bawah jika perlu
+              const SizedBox(height: 24),
             ],
           ),
         ),
