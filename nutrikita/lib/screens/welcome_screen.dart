@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
+// Tidak perlu lagi mengimpor app_colors.dart secara langsung di sini,
+// karena semua warna sudah diakses melalui Theme.of(context).colorScheme
+// atau theme.textTheme.style?.copyWith()
+// import '../utils/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -9,8 +12,9 @@ class WelcomeScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-
+      // backgroundColor sudah diatur di theme.scaffoldBackgroundColor,
+      // jadi baris ini sebenarnya tidak perlu lagi jika tidak ada override khusus.
+      // backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -21,34 +25,48 @@ class WelcomeScreen extends StatelessWidget {
               Image.asset('assets/logos/nutrikita.png', height: 300),
               const SizedBox(height: 16),
 
-              const SizedBox(height: 24),
+              // Teks 'Selamat Datang Di NutriKita'
+              // Gunakan gaya dari theme.textTheme yang paling sesuai
               Text(
                 'Selamat Datang Di NutriKita \n Bersama Membantu Tumbuh Kembang Anak',
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.darkText,
-                  fontSize: 12,
+                // Menggunakan headlineSmall atau titleLarge/medium tergantung ukuran yang diinginkan
+                // Mengambil warna dari colorScheme.onBackground (warna teks di atas background)
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color:
+                      theme.colorScheme.onBackground, // Ambil warna dari tema
+                  // Hapus fontSize dan fontWeight manual karena sudah diatur di theme.textTheme
+                  // fontSize: 12, // Ini akan meng-override yang di tema, sebaiknya hindari jika sudah diatur
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 40), // Pertahankan spasi ini
 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    // Navigasi ke '/login' sesuai dengan rute yang sudah Anda daftarkan di main.dart
                     Navigator.pushNamed(context, '/login');
                   },
+                  // Teks tombol akan otomatis mengambil gaya dari elevatedButtonTheme
+                  // yang sudah Anda definisikan di AppTheme.
                   child: const Text('MULAI SEKARANG'),
                 ),
               ),
               const SizedBox(height: 32),
+              // Teks 'Bersama Indonesia Tumbuh, Cerdas, dan Hidup Bahagia'
+              // Gunakan gaya dari theme.textTheme yang paling sesuai (bodySmall)
               Text(
                 'Bersama Indonesia Tumbuh, Cerdas, dan Hidup Bahagia',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.darkText.withOpacity(0.6),
-                  fontSize: 10,
-                ),
                 textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  // Menggunakan warna onBackground atau onSurfaceVariant untuk teks sekunder
+                  color: theme.colorScheme.onBackground.withOpacity(
+                    0.6,
+                  ), // Ambil warna dari tema
+                  // Hapus fontSize manual karena sudah diatur di theme.textTheme
+                  // fontSize: 10, // Ini akan meng-override yang di tema
+                ),
               ),
               const Spacer(),
             ],

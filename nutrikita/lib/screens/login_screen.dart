@@ -1,5 +1,10 @@
+// File: screens/login_screen.dart
+
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
+// Tidak perlu lagi import app_colors.dart di sini,
+// karena semua warna sudah diakses melalui Theme.of(context).colorScheme
+// import '../utils/app_colors.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -16,7 +21,8 @@ class LoginPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text('Masuk', style: theme.appBarTheme.titleTextStyle),
+        // titleTextStyle akan otomatis diambil dari appBarTheme di AppTheme
+        title: const Text('Masuk'), // Cukup teks saja, gaya dari tema
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -28,12 +34,13 @@ class LoginPage extends StatelessWidget {
                 Image.asset('assets/logos/nutrikita.png', height: 120),
                 const SizedBox(height: 8),
                 Card(
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  color: theme.colorScheme.surface,
+                  // Card akan otomatis mengambil gaya dari cardTheme di AppTheme
+                  // (margin, shape, elevation, color sudah diatur di tema)
+                  // Jadi, tidak perlu lagi mengaturnya secara manual di sini:
+                  // margin: EdgeInsets.zero,
+                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  // elevation: 4,
+                  // color: theme.colorScheme.surface, // ini sudah diatur di CardTheme.color
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -43,9 +50,13 @@ class LoginPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Email Field
-                        Text('Email', style: theme.textTheme.labelLarge),
+                        Text(
+                          'Email',
+                          style: theme.textTheme.labelLarge,
+                        ), // Menggunakan gaya dari tema
                         const SizedBox(height: 8),
                         TextFormField(
+                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
                           decoration: const InputDecoration(
                             hintText: 'Masukkan email Anda',
                           ),
@@ -54,10 +65,14 @@ class LoginPage extends StatelessWidget {
                         const SizedBox(height: 12),
 
                         // Password Field
-                        Text('Password', style: theme.textTheme.labelLarge),
+                        Text(
+                          'Password',
+                          style: theme.textTheme.labelLarge,
+                        ), // Menggunakan gaya dari tema
                         const SizedBox(height: 8),
                         TextFormField(
                           obscureText: true,
+                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
                           decoration: const InputDecoration(
                             hintText: 'Masukkan password Anda',
                           ),
@@ -69,20 +84,28 @@ class LoginPage extends StatelessWidget {
                           children: [
                             Text(
                               'Minimal 8 karakter',
-                              style: theme.textTheme.bodySmall,
+                              style:
+                                  theme
+                                      .textTheme
+                                      .bodySmall, // Menggunakan gaya dari tema
                             ),
                             TextButton(
                               onPressed: () {
                                 // TODO: Implementasi lupa password
                               },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
+                              // TextButton akan otomatis mengambil gaya dari textButtonTheme di AppTheme
+                              // (padding, minimumSize, tapTargetSize, foregroundColor, textStyle)
+                              // Jadi, tidak perlu lagi mengaturnya secara manual di sini:
+                              // style: TextButton.styleFrom(
+                              //   padding: EdgeInsets.zero,
+                              //   minimumSize: Size.zero,
+                              //   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              // ),
                               child: Text(
                                 'Lupa Password',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                // Gaya teks sudah diatur di textButtonTheme,
+                                // Tapi jika ingin override warna & ketebalan, gunakan copyWith
+                                style: theme.textTheme.labelMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -98,8 +121,14 @@ class LoginPage extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              // TODO: Implementasi logika login
+                              Navigator.pushReplacementNamed(
+                                context,
+                                '/siswa/dashboard',
+                              );
                             },
+                            // ElevatedButton akan otomatis mengambil gaya dari elevatedButtonTheme di AppTheme
+                            // (backgroundColor, foregroundColor, padding, shape, textStyle, shadowColor, elevation)
+                            // Jadi, cukup teks saja:
                             child: const Text('Masuk'),
                           ),
                         ),
@@ -110,7 +139,10 @@ class LoginPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Divider(
-                                color: theme.colorScheme.outlineVariant,
+                                color:
+                                    theme
+                                        .colorScheme
+                                        .outlineVariant, // Menggunakan warna dari tema
                               ),
                             ),
                             Padding(
@@ -120,13 +152,19 @@ class LoginPage extends StatelessWidget {
                               child: Text(
                                 'Masuk dengan',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                  color:
+                                      theme
+                                          .colorScheme
+                                          .onSurfaceVariant, // Menggunakan warna dari tema
                                 ),
                               ),
                             ),
                             Expanded(
                               child: Divider(
-                                color: theme.colorScheme.outlineVariant,
+                                color:
+                                    theme
+                                        .colorScheme
+                                        .outlineVariant, // Menggunakan warna dari tema
                               ),
                             ),
                           ],
@@ -140,27 +178,27 @@ class LoginPage extends StatelessWidget {
                             onPressed: () {
                               // TODO: Implementasi login dengan Google
                             },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              side: BorderSide(
-                                color: theme.colorScheme.outline,
-                                width: 1.5,
-                              ),
-                              foregroundColor: theme.colorScheme.onSurface,
-                            ),
+                            // OutlinedButton akan otomatis mengambil gaya dari outlinedButtonTheme di AppTheme
+                            // (side, foregroundColor, padding, shape, textStyle)
+                            // Jadi, tidak perlu lagi mengaturnya secara manual di sini:
+                            // style: OutlinedButton.styleFrom(
+                            //   padding: const EdgeInsets.symmetric(vertical: 14),
+                            //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            //   side: BorderSide(color: theme.colorScheme.outline, width: 1.5),
+                            //   foregroundColor: theme.colorScheme.onSurface,
+                            // ),
                             icon: Image.asset(
                               'assets/logos/google.png',
                               height: 24,
                             ),
-                            label: const Text(
+                            label: Text(
                               'Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              // Gaya teks sudah diatur di outlinedButtonTheme,
+                              // tapi jika ada perbedaan khusus di sini, gunakan copyWith:
+                              style:
+                                  theme
+                                      .textTheme
+                                      .labelLarge, // Menggunakan gaya dari tema
                             ),
                           ),
                         ),
@@ -180,19 +218,31 @@ class LoginPage extends StatelessWidget {
                       ),
                     );
                   },
+                  // TextButton akan otomatis mengambil gaya dari textButtonTheme di AppTheme
+                  // (foregroundColor, padding, textStyle)
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'Belum punya akun? ',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onBackground,
+                        color:
+                            theme
+                                .colorScheme
+                                .onBackground, // Menggunakan warna dari tema
                       ),
                       children: <TextSpan>[
                         TextSpan(
                           text: 'Daftar disini',
+                          // Gaya teks sudah diatur di textButtonTheme,
+                          // tapi jika ingin override warna & ketebalan, gunakan copyWith:
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                            color:
+                                theme
+                                    .colorScheme
+                                    .primary, // Menggunakan warna dari tema
+                            fontWeight:
+                                FontWeight
+                                    .bold, // Menggunakan ketebalan dari tema
                           ),
                         ),
                       ],
