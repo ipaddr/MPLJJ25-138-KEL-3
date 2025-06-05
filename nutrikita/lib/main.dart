@@ -1,11 +1,11 @@
 // File: main.dart
-
 import 'package:flutter/material.dart';
-import 'screens/welcome_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'utils/app_theme.dart';
-import 'screens/siswa/dashboard.dart';
+import 'package:nutrikita/screens/siswa/input_makanan.dart';
+import '../screens/siswa/dashboard.dart';
+import '../utils/app_theme.dart';
+import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
+import '../screens/welcome_screen.dart'; // Pastikan ini diimpor
 
 void main() {
   runApp(const MyApp());
@@ -17,18 +17,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NutriKita',
-      debugShowCheckedModeBanner: false,
-      // Terapkan tema dari AppTheme
-      theme: AppTheme.lightTheme, // <-- Gunakan tema yang sudah dipindahkan
+      title: 'NutriKita App',
+      theme: AppTheme.lightTheme,
+      initialRoute: '/', // Aplikasi akan dimulai dari rute '/'
 
-      initialRoute: '/',
       routes: {
-        '/': (context) => const WelcomeScreen(),
+        '/':
+            (context) =>
+                const WelcomeScreen(), // Rute awal Anda adalah WelcomeScreen
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterScreen(),
-        '/siswa/dashboard':
-            (context) => const DashboardScreen(), // <-- Tambahkan rute ini
+        // 3. Tambahkan rute untuk DashboardScreen
+        '/dashboard': (context) => const DashboardScreen(),
+        '/input_makanan': (context) => const InputMakananScreen(),
       },
     );
   }

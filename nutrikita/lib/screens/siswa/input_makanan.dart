@@ -1,15 +1,13 @@
-// File: screens/add_consumption_screen.dart
-
 import 'package:flutter/material.dart';
 
-class InputMakanan extends StatefulWidget {
-  const InputMakanan({super.key});
+class InputMakananScreen extends StatefulWidget {
+  const InputMakananScreen({super.key});
 
   @override
-  State<InputMakanan> createState() => _InputMakananState();
+  State<InputMakananScreen> createState() => _InputMakananScreenState();
 }
 
-class _InputMakananState extends State<InputMakanan> {
+class _InputMakananScreenState extends State<InputMakananScreen> {
   String? _selectedMealTime;
   String? _selectedUnit;
   String? _selectedFoodSource;
@@ -22,7 +20,15 @@ class _InputMakananState extends State<InputMakanan> {
     'Camilan Sore',
     'Lainnya',
   ];
-  final List<String> _units = ['gram', 'ml', 'porsi', 'buah', 'lainnya'];
+  final List<String> _units = [
+    'gram',
+    'ml',
+    'porsi',
+    'buah',
+    'sendok',
+    'cup',
+    'lainnya',
+  ];
   final List<String> _foodSources = [
     'Homemade',
     'Restoran',
@@ -36,7 +42,16 @@ class _InputMakananState extends State<InputMakanan> {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Konsumsi')),
+      appBar: AppBar(
+        title: Text(
+          'Input Makanan',
+          style:
+              theme
+                  .textTheme
+                  .headlineSmall, // Menggunakan gaya teks yang sesuai dengan tema
+        ),
+        centerTitle: true, // Judul di tengah seperti di gambar
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -44,17 +59,22 @@ class _InputMakananState extends State<InputMakanan> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Card(
+                margin: EdgeInsets.zero, // Menghilangkan margin default Card
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Waktu Makan
-                      Text('Waktu Makan', style: theme.textTheme.labelLarge),
+                      Text(
+                        'Waktu', // Judul "Waktu" sesuai gambar
+                        style: theme.textTheme.labelLarge,
+                      ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          hintText: 'Pilih waktu makan',
+                          hintText:
+                              'Pilih waktu makan', // Placeholder sesuai gambar
                         ),
                         value: _selectedMealTime,
                         items:
@@ -70,83 +90,77 @@ class _InputMakananState extends State<InputMakanan> {
                           });
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // Makanan / Minuman & Kuantitas
                       Text(
-                        'Makanan / Minuman',
+                        'Makanan / Minuman', // Judul sesuai gambar
                         style: theme.textTheme.labelLarge,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        maxLines: 3,
                         decoration: const InputDecoration(
-                          hintText: 'Nama makanan/minuman',
+                          hintText:
+                              'Masukkan makanan / minuman yang dikonsumsi', // Placeholder sesuai gambar
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
+
+                      // Ukuran Porsi
+                      Text(
+                        'Ukuran Porsi', // Judul sesuai gambar
+                        style: theme.textTheme.labelLarge,
+                      ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Banyak',
-                                  style: theme.textTheme.labelLarge,
-                                ),
-                                const SizedBox(height: 8),
-                                TextFormField(
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    hintText: 'Jumlah',
-                                  ),
-                                ),
-                              ],
+                            flex: 1, // Mengurangi fleksibilitas untuk 'Banyak'
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                hintText: 'Banyak',
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 4),
                           Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Satuan',
-                                  style: theme.textTheme.labelLarge,
-                                ),
-                                const SizedBox(height: 8),
-                                DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    hintText: 'Satuan',
-                                  ),
-                                  value: _selectedUnit,
-                                  items:
-                                      _units.map((String unit) {
-                                        return DropdownMenuItem<String>(
-                                          value: unit,
-                                          child: Text(unit),
-                                        );
-                                      }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _selectedUnit = newValue;
-                                    });
-                                  },
-                                ),
-                              ],
+                            flex:
+                                2, // Memberi lebih banyak fleksibilitas untuk 'Satuan'
+                            child: DropdownButtonFormField<String>(
+                              decoration: const InputDecoration(
+                                hintText: 'Satuan',
+                              ),
+                              value: _selectedUnit,
+                              items:
+                                  _units.map((String unit) {
+                                    return DropdownMenuItem<String>(
+                                      value: unit,
+                                      child: Text(unit),
+                                    );
+                                  }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedUnit = newValue;
+                                });
+                              },
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // Sumber Makanan
-                      Text('Sumber Makanan', style: theme.textTheme.labelLarge),
+                      Text(
+                        'Sumber Makanan', // Judul sesuai gambar
+                        style: theme.textTheme.labelLarge,
+                      ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          hintText: 'Pilih sumber makanan',
+                          hintText:
+                              'Pilih sumber makanan', // Placeholder sesuai gambar
                         ),
                         value: _selectedFoodSource,
                         items:
@@ -162,88 +176,87 @@ class _InputMakananState extends State<InputMakanan> {
                           });
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // Foto Makanan
-                      Text('Foto Makanan', style: theme.textTheme.labelLarge),
+                      Text(
+                        'Foto Makanan', // Judul sesuai gambar
+                        style: theme.textTheme.labelLarge,
+                      ),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         decoration: BoxDecoration(
-                          color:
-                              theme
-                                  .colorScheme
-                                  .surface, // Menggunakan warna surface dari tema
+                          color: theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: theme.dividerTheme.color!,
-                          ), // Menggunakan warna divider dari tema
+                          border: Border.all(color: theme.dividerTheme.color!),
                         ),
                         child: Column(
                           children: [
                             Icon(
-                              Icons.camera_alt_outlined,
+                              Icons
+                                  .upload_file, // Menggunakan ikon upload yang lebih umum
                               size: 40,
-                              color:
-                                  theme
-                                      .iconTheme
-                                      .color, // Menggunakan warna icon dari tema
+                              color: theme.iconTheme.color,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Tambahkan foto makanan',
+                              'Tambahkan foto makanan', // Teks sesuai gambar
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color:
-                                    theme
-                                        .colorScheme
-                                        .onSurfaceVariant, // Warna teks netral
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // Catatan
-                      Text('Catatan', style: theme.textTheme.labelLarge),
+                      Text(
+                        'Catatan', // Judul sesuai gambar
+                        style: theme.textTheme.labelLarge,
+                      ),
                       const SizedBox(height: 8),
                       TextFormField(
                         maxLines: 3,
                         decoration: const InputDecoration(
-                          hintText: 'Masukkan keterangan tambahan',
+                          hintText:
+                              'Masukkan keterangan tambahan', // Placeholder sesuai gambar
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Tombol Simpan
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // TODO: Implementasi logika simpan data input makanan
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Data makanan berhasil diinput! (Dummy)',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Simpan',
+                          ), // Teks "Simpan" sesuai gambar
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-
-              // Tombol Simpan
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implementasi logika simpan data konsumsi
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Data konsumsi berhasil disimpan! (Dummy)',
-                        ),
-                      ),
-                    );
-                    Navigator.pop(
-                      context,
-                    ); // Kembali ke halaman sebelumnya setelah simpan
-                  },
-                  child: const Text('Simpan'),
-                ),
-              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
       ),
+      // bottomNavigationBar: ... (bottom nav bar Anda akan ditempatkan di sini jika terpisah)
     );
   }
 }

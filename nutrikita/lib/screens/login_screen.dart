@@ -2,9 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
-// Tidak perlu lagi import app_colors.dart di sini,
-// karena semua warna sudah diakses melalui Theme.of(context).colorScheme
-// import '../utils/app_colors.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -123,7 +120,7 @@ class LoginPage extends StatelessWidget {
                             onPressed: () {
                               Navigator.pushReplacementNamed(
                                 context,
-                                '/siswa/dashboard',
+                                '/dashboard',
                               );
                             },
                             // ElevatedButton akan otomatis mengambil gaya dari elevatedButtonTheme di AppTheme

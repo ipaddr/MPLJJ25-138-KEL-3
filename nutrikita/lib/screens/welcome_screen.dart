@@ -12,9 +12,6 @@ class WelcomeScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      // backgroundColor sudah diatur di theme.scaffoldBackgroundColor,
-      // jadi baris ini sebenarnya tidak perlu lagi jika tidak ada override khusus.
-      // backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -45,11 +42,8 @@ class WelcomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigasi ke '/login' sesuai dengan rute yang sudah Anda daftarkan di main.dart
                     Navigator.pushNamed(context, '/login');
                   },
-                  // Teks tombol akan otomatis mengambil gaya dari elevatedButtonTheme
-                  // yang sudah Anda definisikan di AppTheme.
                   child: const Text('MULAI SEKARANG'),
                 ),
               ),
