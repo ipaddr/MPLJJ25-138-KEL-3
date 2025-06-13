@@ -20,6 +20,34 @@ class SekolahScreen extends StatelessWidget {
               snap: true,
               expandedHeight: 120,
               backgroundColor: theme.scaffoldBackgroundColor,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  tooltip: 'Keluar',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Konfirmasi Keluar'),
+                        content: const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Batal'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.popUntil(context, (route) => route.isFirst);
+                              // TODO: Tambahkan logika logout dari backend atau clear session jika ada
+                            },
+                            child: const Text('Keluar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: false,
                 titlePadding: const EdgeInsets.only(left: 24.0, bottom: 32.0),
@@ -37,16 +65,16 @@ class SekolahScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Info utama dalam Card
                     Card(
                       margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Selamat Datang, Admin SD Negri 1 Sana!',
+                              'Selamat Datang, Admin SD Negeri 1 Sana!',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -58,31 +86,13 @@ class SekolahScreen extends StatelessWidget {
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _infoBox(
-                                  theme,
-                                  icon: Icons.people,
-                                  label: 'Siswa',
-                                  value: '1.200',
-                                  color: theme.colorScheme.primary,
-                                ),
-                                _infoBox(
-                                  theme,
-                                  icon: Icons.restaurant,
-                                  label: 'Menu',
-                                  value: '15',
-                                  color: Colors.orange,
-                                ),
-                                _infoBox(
-                                  theme,
-                                  icon: Icons.health_and_safety,
-                                  label: 'Sehat',
-                                  value: '85%',
-                                  color: Colors.green,
-                                ),
+                                _infoBox(theme, icon: Icons.people, label: 'Siswa', value: '1.200', color: theme.colorScheme.primary),
+                                _infoBox(theme, icon: Icons.restaurant_menu, label: 'Menu', value: '15', color: Colors.orange),
+                                _infoBox(theme, icon: Icons.health_and_safety, label: 'Sehat', value: '85%', color: Colors.green),
                               ],
                             ),
                           ],
@@ -90,9 +100,8 @@ class SekolahScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Chart sederhana dalam Card
                     Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       margin: EdgeInsets.zero,
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -118,30 +127,21 @@ class SekolahScreen extends StatelessWidget {
                                       color: Colors.green,
                                       title: '70%',
                                       radius: 40,
-                                      titleStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
+                                      titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                     ),
                                     PieChartSectionData(
                                       value: 25,
                                       color: Colors.orange,
                                       title: '25%',
                                       radius: 40,
-                                      titleStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
+                                      titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                     ),
                                     PieChartSectionData(
                                       value: 5,
                                       color: Colors.red,
                                       title: '5%',
                                       radius: 40,
-                                      titleStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
+                                      titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -152,9 +152,8 @@ class SekolahScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Daftar info nutrisi dalam Card
                     Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       margin: EdgeInsets.zero,
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -169,13 +168,8 @@ class SekolahScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             _nutrisiRow(theme, 'Protein', 0.9, Colors.green),
-                            _nutrisiRow(theme, 'Lemak', 0.7, Colors.yellow),
-                            _nutrisiRow(
-                              theme,
-                              'Karbohidrat',
-                              0.5,
-                              Colors.lightGreenAccent,
-                            ),
+                            _nutrisiRow(theme, 'Lemak', 0.7, Colors.amber),
+                            _nutrisiRow(theme, 'Karbohidrat', 0.5, Colors.lightGreenAccent),
                           ],
                         ),
                       ),
@@ -218,11 +212,11 @@ class SekolahScreen extends StatelessWidget {
 
   Widget _nutrisiRow(ThemeData theme, String label, double value, Color color) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           SizedBox(
-            width: 90,
+            width: 100,
             child: Text(label, style: theme.textTheme.bodyMedium),
           ),
           Expanded(

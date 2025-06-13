@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
-// Tidak perlu lagi mengimpor app_colors.dart secara langsung di sini,
-// karena semua warna sudah diakses melalui Theme.of(context).colorScheme
-// import '../utils/app_colors.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      // Scaffold background color akan otomatis dari theme.scaffoldBackgroundColor
       appBar: AppBar(
-        // titleTextStyle akan otomatis diambil dari appBarTheme di AppTheme
-        title: const Text('Daftar'), // Cukup teks saja, gaya dari tema
+        title: const Text('Daftar'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
@@ -30,16 +23,12 @@ class RegisterScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset('assets/logos/nutrikita.png', height: 120),
-                const SizedBox(height: 8),
-
+                const SizedBox(height: 24),
                 Card(
-                  // Card akan otomatis mengambil gaya dari cardTheme di AppTheme
-                  // (margin, shape, elevation, color sudah diatur di tema)
-                  // Jadi, tidak perlu lagi mengaturnya secara manual di sini:
-                  // margin: EdgeInsets.zero,
-                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  // elevation: 4,
-                  // color: theme.colorScheme.surface, // ini sudah diatur di CardTheme.color
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -48,124 +37,71 @@ class RegisterScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Nama Field
-                        Text(
-                          'Nama Lengkap',
-                          style: theme.textTheme.labelLarge,
-                        ), // Menggunakan gaya dari tema
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
-                          decoration: const InputDecoration(
-                            hintText: 'Masukkan nama lengkap Anda',
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        Text(
-                          'NISN',
-                          style: theme.textTheme.labelLarge,
-                        ), // Menggunakan gaya dari tema
-                        const SizedBox(height: 8),
-                        TextFormField(
+                        _buildLabel(theme, 'Nama Lengkap'),
+                        _buildInputField(hintText: 'Masukkan nama lengkap Anda'),
+                        _buildLabel(theme, 'NISN'),
+                        _buildInputField(
+                          hintText: 'Masukkan NISN Anda',
                           keyboardType: TextInputType.number,
-                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
-                          decoration: const InputDecoration(
-                            hintText: 'Masukkan NISN Anda',
-                          ),
                         ),
-                        const SizedBox(height: 8),
-
-                        Text(
-                          'Email',
-                          style: theme.textTheme.labelLarge,
-                        ), // Menggunakan gaya dari tema
-                        const SizedBox(height: 8),
-                        TextFormField(
+                        _buildLabel(theme, 'Email'),
+                        _buildInputField(
+                          hintText: 'Masukkan email Anda',
                           keyboardType: TextInputType.emailAddress,
-                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
-                          decoration: const InputDecoration(
-                            hintText: 'Masukkan email Anda',
-                          ),
                         ),
-                        const SizedBox(height: 8),
-
-                        Text(
-                          'Kata Sandi',
-                          style: theme.textTheme.labelLarge,
-                        ), // Menggunakan gaya dari tema
-                        const SizedBox(height: 8),
+                        _buildLabel(theme, 'Kata Sandi'),
                         TextFormField(
                           obscureText: true,
-                          // InputDecoration akan otomatis mengambil gaya dari inputDecorationTheme di AppTheme
                           decoration: const InputDecoration(
                             hintText: 'Buat kata sandi Anda',
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Minimal 8 karakter',
-                            style:
-                                theme
-                                    .textTheme
-                                    .bodySmall, // Menggunakan gaya dari tema
-                          ),
+                        Text(
+                          'Minimal 8 karakter',
+                          style: theme.textTheme.bodySmall,
                         ),
-
                         const SizedBox(height: 32),
-
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF5A3E36),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                             onPressed: () {
-                              // TODO: Implementasi logika pendaftaran di sini
-
-                              // Navigasi kembali ke halaman sebelumnya (misalnya LoginScreen)
                               Navigator.pop(context);
                             },
-                            // ElevatedButton akan otomatis mengambil gaya dari elevatedButtonTheme di AppTheme
-                            // (backgroundColor, foregroundColor, padding, shape, textStyle, shadowColor, elevation)
-                            child: const Text('DAFTAR SEKARANG'),
+                            child: const Text(
+                              'DAFTAR SEKARANG',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 32),
-
                 TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Kembali ke halaman sebelumnya
-                  },
-                  // TextButton akan otomatis mengambil gaya dari textButtonTheme di AppTheme
-                  // (foregroundColor, padding, textStyle)
+                  onPressed: () => Navigator.pop(context),
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'Sudah punya akun? ',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color:
-                            theme
-                                .colorScheme
-                                .onBackground, // Menggunakan warna dari tema
+                        color: theme.colorScheme.onBackground,
                       ),
-                      children: <TextSpan>[
+                      children: [
                         TextSpan(
                           text: 'Masuk disini',
-                          // Gaya teks sudah diatur di textButtonTheme,
-                          // tapi jika ingin override warna & ketebalan, gunakan copyWith:
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color:
-                                theme
-                                    .colorScheme
-                                    .primary, // Menggunakan warna dari tema
-                            fontWeight:
-                                FontWeight
-                                    .bold, // Menggunakan ketebalan dari tema
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -176,6 +112,31 @@ class RegisterScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(ThemeData theme, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 8),
+      child: Text(
+        label,
+        style: theme.textTheme.labelLarge,
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required String hintText,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: TextFormField(
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          hintText: hintText,
         ),
       ),
     );

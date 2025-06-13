@@ -39,224 +39,215 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: const Color(0xFFFFFDF7),
+      appBar: AppBar(
+        title: const Text(
+          'Input Makanan',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFFA8D5BA),
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              floating: true,
-              pinned: true,
-              snap: true,
-              expandedHeight: 120,
-              backgroundColor: theme.scaffoldBackgroundColor,
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: false,
-                titlePadding: const EdgeInsets.only(left: 24.0, bottom: 16.0),
-                title: Text(
-                  'Input Makanan',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: theme.colorScheme.onBackground,
-                  ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
-                      margin: EdgeInsets.zero,
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Waktu Makan
-                            Text('Waktu', style: theme.textTheme.labelLarge),
-                            const SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDropdown(
+                        label: 'Waktu Makan',
+                        hint: 'Pilih waktu makan',
+                        value: _selectedMealTime,
+                        items: _mealTimes,
+                        onChanged: (val) => setState(() => _selectedMealTime = val),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Makanan / Minuman',
+                        hint: 'Masukkan makanan / minuman yang dikonsumsi',
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Ukuran Porsi',
+                        style: theme.textTheme.labelLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
-                                hintText: 'Pilih waktu makan',
+                                hintText: 'Banyak',
+                                border: OutlineInputBorder(),
                               ),
-                              value: _selectedMealTime,
-                              items:
-                                  _mealTimes.map((String time) {
-                                    return DropdownMenuItem<String>(
-                                      value: time,
-                                      child: Text(time),
-                                    );
-                                  }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedMealTime = newValue;
-                                });
-                              },
                             ),
-                            const SizedBox(height: 16),
-
-                            // Makanan / Minuman & Kuantitas
-                            Text(
-                              'Makanan / Minuman',
-                              style: theme.textTheme.labelLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              maxLines: 3,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            flex: 2,
+                            child: DropdownButtonFormField<String>(
                               decoration: const InputDecoration(
-                                hintText:
-                                    'Masukkan makanan / minuman yang dikonsumsi',
+                                hintText: 'Satuan',
+                                border: OutlineInputBorder(),
                               ),
+                              value: _selectedUnit,
+                              items: _units
+                                  .map((unit) => DropdownMenuItem(
+                                        value: unit,
+                                        child: Text(unit),
+                                      ))
+                                  .toList(),
+                              onChanged: (val) => setState(() => _selectedUnit = val),
                             ),
-                            const SizedBox(height: 16),
-
-                            // Ukuran Porsi
-                            Text(
-                              'Ukuran Porsi',
-                              style: theme.textTheme.labelLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Banyak',
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  flex: 2,
-                                  child: DropdownButtonFormField<String>(
-                                    decoration: const InputDecoration(
-                                      hintText: 'Satuan',
-                                    ),
-                                    value: _selectedUnit,
-                                    items:
-                                        _units.map((String unit) {
-                                          return DropdownMenuItem<String>(
-                                            value: unit,
-                                            child: Text(unit),
-                                          );
-                                        }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        _selectedUnit = newValue;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Sumber Makanan
-                            Text(
-                              'Sumber Makanan',
-                              style: theme.textTheme.labelLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
-                              decoration: const InputDecoration(
-                                hintText: 'Pilih sumber makanan',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDropdown(
+                        label: 'Sumber Makanan',
+                        hint: 'Pilih sumber makanan',
+                        value: _selectedFoodSource,
+                        items: _foodSources,
+                        onChanged: (val) => setState(() => _selectedFoodSource = val),
+                      ),
+                      const SizedBox(height: 16),
+                      Text('Foto Makanan', style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          // TODO: Tambah logika unggah foto
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade100,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate_outlined, color: Colors.grey.shade600, size: 40),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tambahkan foto makanan',
+                                style: TextStyle(color: Colors.grey.shade600),
                               ),
-                              value: _selectedFoodSource,
-                              items:
-                                  _foodSources.map((String source) {
-                                    return DropdownMenuItem<String>(
-                                      value: source,
-                                      child: Text(source),
-                                    );
-                                  }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedFoodSource = newValue;
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Foto Makanan
-                            Text(
-                              'Foto Makanan',
-                              style: theme.textTheme.labelLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 24),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surface,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: theme.dividerColor),
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.upload_file,
-                                    size: 40,
-                                    color: theme.iconTheme.color,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Tambahkan foto makanan',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Catatan
-                            Text('Catatan', style: theme.textTheme.labelLarge),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              maxLines: 3,
-                              decoration: const InputDecoration(
-                                hintText: 'Masukkan keterangan tambahan',
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Tombol Simpan
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Data makanan berhasil diinput! (Dummy)',
-                                      ),
-                                    ),
-                                  );
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Simpan'),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Catatan',
+                        hint: 'Masukkan keterangan tambahan',
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFDD9D4B),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Data makanan berhasil diinput!')),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Simpan',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              )
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required String hint,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            hintText: hint,
+            border: const OutlineInputBorder(),
+          ),
+          value: value,
+          items: items
+              .map((item) => DropdownMenuItem(
+                    value: item,
+                    child: Text(item),
+                  ))
+              .toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
+        TextFormField(
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+      ],
     );
   }
 }

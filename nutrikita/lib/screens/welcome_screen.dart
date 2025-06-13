@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-// Tidak perlu lagi mengimpor app_colors.dart secara langsung di sini,
-// karena semua warna sudah diakses melalui Theme.of(context).colorScheme
-// atau theme.textTheme.style?.copyWith()
-// import '../utils/app_colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -19,47 +16,43 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
-              Image.asset('assets/logos/nutrikita.png', height: 300),
-              const SizedBox(height: 16),
-
-              // Teks 'Selamat Datang Di NutriKita'
-              // Gunakan gaya dari theme.textTheme yang paling sesuai
+              Image.asset('assets/logos/nutrikita.png', height: 260),
+              const SizedBox(height: 20),
               Text(
-                'Selamat Datang Di NutriKita \n Bersama Membantu Tumbuh Kembang Anak',
+                'Selamat Datang di NutriKita\nBersama Membantu Tumbuh Kembang Anak',
                 textAlign: TextAlign.center,
-                // Menggunakan headlineSmall atau titleLarge/medium tergantung ukuran yang diinginkan
-                // Mengambil warna dari colorScheme.onBackground (warna teks di atas background)
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color:
-                      theme.colorScheme.onBackground, // Ambil warna dari tema
-                  // Hapus fontSize dan fontWeight manual karena sudah diatur di theme.textTheme
-                  // fontSize: 12, // Ini akan meng-override yang di tema, sebaiknya hindari jika sudah diatur
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 40), // Pertahankan spasi ini
-
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF5A3E36),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');
                   },
-                  child: const Text('MULAI SEKARANG'),
+                  child: const Text(
+                    'MULAI SEKARANG',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
-              // Teks 'Bersama Indonesia Tumbuh, Cerdas, dan Hidup Bahagia'
-              // Gunakan gaya dari theme.textTheme yang paling sesuai (bodySmall)
               Text(
                 'Bersama Indonesia Tumbuh, Cerdas, dan Hidup Bahagia',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  // Menggunakan warna onBackground atau onSurfaceVariant untuk teks sekunder
-                  color: theme.colorScheme.onBackground.withOpacity(
-                    0.6,
-                  ), // Ambil warna dari tema
-                  // Hapus fontSize manual karena sudah diatur di theme.textTheme
-                  // fontSize: 10, // Ini akan meng-override yang di tema
+                  color: theme.colorScheme.onBackground.withOpacity(0.6),
                 ),
               ),
               const Spacer(),
