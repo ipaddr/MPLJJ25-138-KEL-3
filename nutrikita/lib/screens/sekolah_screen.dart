@@ -6,186 +6,236 @@ class SekolahScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE5F1FB),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(  // <- Tambahan ini
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                const Row(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              floating: true,
+              pinned: true,
+              snap: true,
+              expandedHeight: 120,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: false,
+                titlePadding: const EdgeInsets.only(left: 24.0, bottom: 32.0),
+                title: Text(
+                  'Dashboard Sekolah',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: theme.colorScheme.onBackground,
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(radius: 24, backgroundColor: Colors.grey),
-                    SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome, User!',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    // Info utama dalam Card
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Selamat Datang, Admin SD Negri 1 Sana!',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Pantau perkembangan gizi dan kesehatan siswa di sekolah Anda.',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _infoBox(
+                                  theme,
+                                  icon: Icons.people,
+                                  label: 'Siswa',
+                                  value: '1.200',
+                                  color: theme.colorScheme.primary,
+                                ),
+                                _infoBox(
+                                  theme,
+                                  icon: Icons.restaurant,
+                                  label: 'Menu',
+                                  value: '15',
+                                  color: Colors.orange,
+                                ),
+                                _infoBox(
+                                  theme,
+                                  icon: Icons.health_and_safety,
+                                  label: 'Sehat',
+                                  value: '85%',
+                                  color: Colors.green,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Pantau nutrisi anak dan tetap sehat',
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Chart sederhana dalam Card
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Persentase Gizi Siswa',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 120,
+                              child: PieChart(
+                                PieChartData(
+                                  sectionsSpace: 2,
+                                  centerSpaceRadius: 30,
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: 70,
+                                      color: Colors.green,
+                                      title: '70%',
+                                      radius: 40,
+                                      titleStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    PieChartSectionData(
+                                      value: 25,
+                                      color: Colors.orange,
+                                      title: '25%',
+                                      radius: 40,
+                                      titleStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    PieChartSectionData(
+                                      value: 5,
+                                      color: Colors.red,
+                                      title: '5%',
+                                      radius: 40,
+                                      titleStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Daftar info nutrisi dalam Card
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nutrisi Paling Dibutuhkan',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _nutrisiRow(theme, 'Protein', 0.9, Colors.green),
+                            _nutrisiRow(theme, 'Lemak', 0.7, Colors.yellow),
+                            _nutrisiRow(
+                              theme,
+                              'Karbohidrat',
+                              0.5,
+                              Colors.lightGreenAccent,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Donut chart
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.blueAccent),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Persentase gizi siswa',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 150,
-                        child: PieChart(
-                          PieChartData(
-                            sectionsSpace: 2,
-                            centerSpaceRadius: 40,
-                            sections: [
-                              PieChartSectionData(
-                                value: 70,
-                                color: Colors.green,
-                                title: '70%',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              PieChartSectionData(
-                                value: 25,
-                                color: Colors.orange,
-                                title: '25%',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              PieChartSectionData(
-                                value: 5,
-                                color: Colors.red,
-                                title: '5%',
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Line chart perkembangan
-                const Text(
-                  'Perkembangan kondisi siswa',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: LineChart(
-                    LineChartData(
-                      lineBarsData: [
-                        LineChartBarData(
-                          isCurved: true,
-                          spots: const [
-                            FlSpot(0, 1),
-                            FlSpot(1, 1.1),
-                            FlSpot(2, 1.05),
-                            FlSpot(3, 1.15),
-                            FlSpot(4, 1.2),
-                            FlSpot(5, 1.18),
-                            FlSpot(6, 1.22),
-                            FlSpot(7, 1.2),
-                            FlSpot(8, 1.23),
-                            FlSpot(9, 1.25),
-                            FlSpot(10, 1.27),
-                            FlSpot(11, 1.3),
-                          ],
-                          color: Colors.black, 
-                          barWidth: 2,
-                        ),
-                      ],
-                      titlesData: FlTitlesData(show: false),
-                      gridData: FlGridData(show: false),
-                      borderData: FlBorderData(show: false),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Bar chart nutrisi
-                const Text(
-                  'Nutrisi yang paling dibutuhkan siswa',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildNutrisiBar('Protein', 0.9, Colors.green),
-                      _buildNutrisiBar('Lemak', 0.7, Colors.yellow),
-                      _buildNutrisiBar('Karbohidrat', 0.5, Colors.lightGreenAccent),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildNutrisiBar(String label, double value, Color color) {
+  Widget _infoBox(
+    ThemeData theme, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        CircleAvatar(
+          backgroundColor: color.withOpacity(0.15),
+          child: Icon(icon, color: color),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(label, style: theme.textTheme.bodySmall),
+      ],
+    );
+  }
+
+  Widget _nutrisiRow(ThemeData theme, String label, double value, Color color) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label)),
+          SizedBox(
+            width: 90,
+            child: Text(label, style: theme.textTheme.bodyMedium),
+          ),
           Expanded(
-            child: Container(
-              height: 14,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              width: 200 * value,
+            child: LinearProgressIndicator(
+              value: value,
+              color: color,
+              backgroundColor: color.withOpacity(0.2),
+              minHeight: 10,
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
+          const SizedBox(width: 12),
+          Text('${(value * 100).toInt()}%', style: theme.textTheme.bodySmall),
         ],
       ),
     );

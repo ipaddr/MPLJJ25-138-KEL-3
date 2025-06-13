@@ -13,7 +13,7 @@ import '../screens/siswa/profile.dart';
 
 import '../screens/pemerintah_screen.dart';
 import '../screens/sekolah_screen.dart';
-import '../screens/feedback_screen.dart';
+import 'screens/ortu_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
 
         '../pemerintah_screen.dart': (context) => const PemerintahScreen(),
         '../sekolah_screen.dart': (context) => const SekolahScreen(),
-        '../feedback_screen.dart': (context) => const FeedbackScreen(),
+        '../feedback_screen.dart': (context) => const OrtuScreen(),
       },
     );
   }

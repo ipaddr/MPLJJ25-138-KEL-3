@@ -5,188 +5,205 @@ class PemerintahScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE5F1FB),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              floating: true,
+              pinned: true,
+              snap: true,
+              expandedHeight: 120,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: false,
+                titlePadding: const EdgeInsets.only(left: 24.0, bottom: 32.0),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Dashboard Nasional',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          Text(
-                            'Program Gizi',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Image.asset(
-                      'assets/logos/nutrikita.png',
-                      height: 60, // dibesarkan
-                    ),
-                  ],
-                ),
-              ),
-
-              // Garis pembatas
-              const Divider(color: Colors.black26, thickness: 1, height: 10),
-
-              const SizedBox(height: 8),
-
-              // Cards Baris Pertama
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: [
-                    _buildInfoCard(
-                      'assets/icons/siswa.png',
-                      '52.913.427',
-                      'Jumlah Anak',
-                    ),
-                    _buildInfoCard(
-                      'assets/icons/sekolah.png',
-                      '400.000',
-                      'Jumlah Sekolah',
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Card Laporan Masuk di tengah
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Center(
-                  child: _buildInfoCard(
-                    'assets/icons/laporan.png',
-                    '100.000',
-                    'Laporan Masuk',
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Status Gizi Nasional dengan ikon besar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Image.asset('assets/icons/status.png', height: 48),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Status Umum Gizi Nasional',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      child: Text(
+                        'Dashboard Nasional',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: theme.colorScheme.onBackground,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 12),
-
-              // Persentase status gizi
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(26),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('🔴 Buruk: 5%'),
-                    Text('🟠 Kurang: 35%'),
-                    Text('🟢 Baik: 60%'),
+                  children: [
+                    // Info utama dalam Card (full width)
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Program Gizi Nasional',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Baris atas: 2 card
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildInfoCard(
+                                    theme,
+                                    iconPath: 'assets/icons/siswa.png',
+                                    value: '52.913.427',
+                                    label: 'Jumlah Anak',
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildInfoCard(
+                                    theme,
+                                    iconPath: 'assets/icons/sekolah.png',
+                                    value: '400.000',
+                                    label: 'Jumlah Sekolah',
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            // Baris bawah: 1 card di tengah
+                            Row(
+                              children: [
+                                const Spacer(),
+                                Expanded(
+                                  flex: 2,
+                                  child: _buildInfoCard(
+                                    theme,
+                                    iconPath: 'assets/icons/laporan.png',
+                                    value: '100.000',
+                                    label: 'Laporan Masuk',
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                const Spacer(),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Status Gizi Nasional
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/icons/status.png',
+                                  height: 36,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Status Umum Gizi Nasional',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '🔴 Buruk: 5%',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            Text(
+                              '🟠 Kurang: 35%',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            Text(
+                              '🟢 Baik: 60%',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Notifikasi Penting
+                    Card(
+                      margin: EdgeInsets.zero,
+                      color: theme.colorScheme.surface,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/icons/peringatan.png',
+                                  height: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Notifikasi Penting',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '⚠️ Kab. Solok: Lonjakan gizi buruk minggu ini',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            Text(
+                              '📌 Sekolah SDN 12 belum mengirim data 3 hari',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            Text(
+                              '🥦 Tingkat konsumsi sayur meningkat 8% minggu ini',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 24),
-
-              // Notifikasi Penting
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/peringatan.png',
-                            height: 24,
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Notifikasi Penting',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '⚠️ Kab. Solok: Lonjakan gizi buruk minggu ini',
-                      ),
-                      const Text(
-                        '📌 Sekolah SDN 12 belum mengirim data 3 hari',
-                      ),
-                      const Text(
-                        '🥦 Tingkat konsumsi sayur meningkat 8% minggu ini',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
-        items: [
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.colorScheme.onSurfaceVariant,
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Akun',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Akun'),
         ],
         onTap: (index) {
           if (index == 1) {
@@ -197,39 +214,38 @@ class PemerintahScreen extends StatelessWidget {
     );
   }
 
-  // Komponen kartu info
-  Widget _buildInfoCard(String iconPath, String value, String label) {
-    return SizedBox(
-      width: 150,
-      height: 120,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(2, 2),
+  Widget _buildInfoCard(
+    ThemeData theme, {
+    required String iconPath,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(iconPath, height: 36),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+              fontSize: 20,
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(iconPath, height: 36),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: Colors.black54),
-            ),
-          ],
-        ),
+          ),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
