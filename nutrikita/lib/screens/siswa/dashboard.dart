@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../siswa/articles.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/nutrition_chart.dart';
 import '../siswa/input_makanan.dart';
+import '../siswa/profile.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,11 +23,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Urutan ini harus sesuai dengan urutan BottomNavigationBarItem Anda
   final List<Widget> _widgetOptions = <Widget>[
     // Halaman Dashboard utama (bagian dari DashboardScreen itu sendiri,
-    // tetapi kita bungkus dalam widget untuk konsistensi IndexedStack)
-    _DashboardContent(), // Kita akan membuat widget terpisSSah untuk konten dashboard
+    // tetapi dibungkus dalam widget untuk konsistensi IndexedStack)
+    _DashboardContent(), // Membuat widget terpisah untuk konten dashboard
     const InputMakananScreen(), // Halaman 'Add'
-    // const BookScreen(), // Halaman 'Book'
-    // const ProfileScreen(), // Halaman 'Profile'
+    const ArticlesScreen(), // Halaman 'Article'
+    const ProfileScreen(), // Halaman 'Profile'
   ];
 
   static DateTime _getFirstDayOfWeek(DateTime date) {
@@ -142,7 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Book'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Articles'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

@@ -5,7 +5,9 @@ import '../screens/siswa/dashboard.dart';
 import '../utils/app_theme.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
-import '../screens/welcome_screen.dart'; // Pastikan ini diimpor
+import '../screens/welcome_screen.dart';
+import '../screens/siswa/articles.dart';
+import '../screens/siswa/article_detail.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,6 +32,14 @@ class MyApp extends StatelessWidget {
         // 3. Tambahkan rute untuk DashboardScreen
         '/dashboard': (context) => const DashboardScreen(),
         '/input_makanan': (context) => const InputMakananScreen(),
+        '/articles': (context) => const ArticlesScreen(),
+        '/article_detail':
+            (context) => ArticleDetailScreen(
+              title: 'Judul Artikel',
+              content: 'Konten artikel di sini...',
+              date: '1 Januari 2023',
+              tags: ['Tag1', 'Tag2'],
+            ),
       },
     );
   }
