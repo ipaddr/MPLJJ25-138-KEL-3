@@ -58,7 +58,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                 titlePadding: const EdgeInsets.only(left: 24.0, bottom: 16.0),
                 title: Text(
                   'Input Makanan',
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     color: theme.colorScheme.onBackground,
                   ),
                 ),
