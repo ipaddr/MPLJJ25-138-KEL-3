@@ -120,12 +120,10 @@ class LoginPage extends StatelessWidget {
                             onPressed: () {
                               Navigator.pushReplacementNamed(
                                 context,
-                                '/dashboard',
+                                // '/dashboard',
+                                '../pemerintah_screen.dart',
                               );
                             },
-                            // ElevatedButton akan otomatis mengambil gaya dari elevatedButtonTheme di AppTheme
-                            // (backgroundColor, foregroundColor, padding, shape, textStyle, shadowColor, elevation)
-                            // Jadi, cukup teks saja:
                             child: const Text('Masuk'),
                           ),
                         ),

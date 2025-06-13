@@ -41,7 +41,7 @@ class DashboardPemerintahScreen extends StatelessWidget {
                       ),
                     ),
                     Image.asset(
-                      'assets/logo/logonutrikita.png',
+                      'assets/logos/nutrikita.png',
                       height: 60, // dibesarkan
                     ),
                   ],
@@ -49,11 +49,7 @@ class DashboardPemerintahScreen extends StatelessWidget {
               ),
 
               // Garis pembatas
-              const Divider(
-                color: Colors.black26,
-                thickness: 1,
-                height: 10,
-              ),
+              const Divider(color: Colors.black26, thickness: 1, height: 10),
 
               const SizedBox(height: 8),
 
@@ -64,8 +60,16 @@ class DashboardPemerintahScreen extends StatelessWidget {
                   spacing: 16,
                   runSpacing: 16,
                   children: [
-                    _buildInfoCard('assets/ikon/ikon_siswa.png', '52.913.427', 'Jumlah Anak'),
-                    _buildInfoCard('assets/ikon/ikon_sekolah.png', '400.000', 'Jumlah Sekolah'),
+                    _buildInfoCard(
+                      'assets/icons/siswa.png',
+                      '52.913.427',
+                      'Jumlah Anak',
+                    ),
+                    _buildInfoCard(
+                      'assets/icons/sekolah.png',
+                      '400.000',
+                      'Jumlah Sekolah',
+                    ),
                   ],
                 ),
               ),
@@ -76,7 +80,11 @@ class DashboardPemerintahScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Center(
-                  child: _buildInfoCard('assets/ikon/ikon_laporan.png', '100.000', 'Laporan Masuk'),
+                  child: _buildInfoCard(
+                    'assets/icons/laporan.png',
+                    '100.000',
+                    'Laporan Masuk',
+                  ),
                 ),
               ),
 
@@ -87,10 +95,7 @@ class DashboardPemerintahScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
-                    Image.asset(
-                      'assets/ikon/ikon_status.png',
-                      height: 48,
-                    ),
+                    Image.asset('assets/icons/status.png', height: 48),
                     const SizedBox(width: 10),
                     const Text(
                       'Status Umum Gizi Nasional',
@@ -141,7 +146,10 @@ class DashboardPemerintahScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Image.asset('assets/ikon/ikon_peringatan.png', height: 24),
+                          Image.asset(
+                            'assets/icons/peringatan.png',
+                            height: 24,
+                          ),
                           const SizedBox(width: 8),
                           const Text(
                             'Notifikasi Penting',
@@ -150,9 +158,15 @@ class DashboardPemerintahScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      const Text('⚠️ Kab. Solok: Lonjakan gizi buruk minggu ini'),
-                      const Text('📌 Sekolah SDN 12 belum mengirim data 3 hari'),
-                      const Text('🥦 Tingkat konsumsi sayur meningkat 8% minggu ini'),
+                      const Text(
+                        '⚠️ Kab. Solok: Lonjakan gizi buruk minggu ini',
+                      ),
+                      const Text(
+                        '📌 Sekolah SDN 12 belum mengirim data 3 hari',
+                      ),
+                      const Text(
+                        '🥦 Tingkat konsumsi sayur meningkat 8% minggu ini',
+                      ),
                     ],
                   ),
                 ),
@@ -168,10 +182,7 @@ class DashboardPemerintahScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home), 
-            label: 'Home',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           const BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Akun',
@@ -211,17 +222,11 @@ class DashboardPemerintahScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black54,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
             ),
           ],
         ),

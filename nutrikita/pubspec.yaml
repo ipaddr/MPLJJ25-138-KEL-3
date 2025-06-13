@@ -28,6 +28,12 @@ flutter:
     - assets/fonts/
     - assets/logos/nutrikita.png
     - assets/logos/google.png
+    - assets/icons/indikator.png
+    - assets/icons/laporan.png
+    - assets/icons/peringatan.png
+    - assets/icons/sekolah.png
+    - assets/icons/siswa.png
+    - assets/icons/status.png
 
   fonts:
     - family: Poppins
