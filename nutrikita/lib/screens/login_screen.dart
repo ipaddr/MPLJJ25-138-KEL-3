@@ -121,7 +121,9 @@ class LoginPage extends StatelessWidget {
                               Navigator.pushReplacementNamed(
                                 context,
                                 // '/dashboard',
-                                '../pemerintah_screen.dart',
+                                // '../pemerintah_screen.dart',
+                                // '../sekolah_screen.dart',
+                                '../feedback_screen.dart',
                               );
                             },
                             child: const Text('Masuk'),
