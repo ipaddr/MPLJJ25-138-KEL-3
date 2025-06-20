@@ -1,14 +1,15 @@
-// File: lib/widgets/custom_bottom_nav_bar.dart
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
+  final List<BottomNavigationBarItem> items;
 
   const BottomNavBar({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
+    required this.items,
   });
 
   @override
@@ -19,17 +20,10 @@ class BottomNavBar extends StatelessWidget {
       currentIndex: selectedIndex,
       onTap: onItemTapped,
       selectedItemColor: theme.colorScheme.primary,
-      unselectedItemColor: theme.colorScheme.onSurface.withAlpha(
-        153,
-      ), // 0.6 * 255 = 153
+      unselectedItemColor: theme.colorScheme.onSurface.withAlpha(153),
       showSelectedLabels: false,
       showUnselectedLabels: false,
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Articles'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
+      items: items,
     );
   }
 }

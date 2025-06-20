@@ -1,12 +1,11 @@
-// File: lib/screens/dashboard_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../siswa/articles.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/nutrition_chart.dart';
 import '../siswa/input_makanan.dart';
-import '../siswa/profile.dart';
+import '../profile.dart';
+import '../../widget/bottom_nav_bar.dart'; // pastikan path ini benar
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,18 +15,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0; // State untuk BottomNavigationBar
+  int _selectedIndex = 0;
   DateTime currentWeekStartDate = _getFirstDayOfWeek(DateTime.now());
 
-  // Daftar widget (screen) yang akan ditampilkan berdasarkan indeks bottom nav
-  // Urutan ini harus sesuai dengan urutan BottomNavigationBarItem Anda
   final List<Widget> _widgetOptions = <Widget>[
-    // Halaman Dashboard utama (bagian dari DashboardScreen itu sendiri,
-    // tetapi dibungkus dalam widget untuk konsistensi IndexedStack)
-    _DashboardContent(), // Membuat widget terpisah untuk konten dashboard
-    const InputMakananScreen(), // Halaman 'Add'
-    const ArticlesScreen(), // Halaman 'Article'
-    const ProfileScreen(), // Halaman 'Profile'
+    _DashboardContent(),
+    const InputMakananScreen(),
+    const ArticlesScreen(),
+    const ProfileScreen(),
   ];
 
   static DateTime _getFirstDayOfWeek(DateTime date) {
@@ -40,30 +35,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const Duration(days: 7),
       );
     });
-    // TODO: Ambil data gizi baru untuk minggu sebelumnya dari API/database
   }
 
   void _goToNextWeek() {
     setState(() {
       currentWeekStartDate = currentWeekStartDate.add(const Duration(days: 7));
     });
-    // TODO: Ambil data gizi baru untuk minggu berikutnya dari API/database
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    // Tidak perlu navigasi pushNamed di sini lagi karena IndexedStack sudah mengurusnya
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Pastikan hanya konten dashboard yang memiliki AppBar ini
-    // Jika _selectedIndex adalah 0 (Dashboard), kita tampilkan AppBar ini
-    // Jika tidak, screen lain yang di IndexedStack akan memiliki AppBar sendiri
     return Scaffold(
       appBar:
           _selectedIndex == 0
@@ -130,18 +119,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(width: 24),
                 ],
               )
-              : null, // AppBar akan null jika bukan di Dashboard (screen lain akan memiliki AppBar sendiri)
+              : null,
       body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: theme.colorScheme.primary,
-        unselectedItemColor: theme.colorScheme.onSurface.withAlpha(
-          153,
-        ), // 0.6 * 255 = 153
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const <BottomNavigationBarItem>[
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
           BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Articles'),

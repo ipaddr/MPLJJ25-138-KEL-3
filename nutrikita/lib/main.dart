@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'utils/app_theme.dart';
 
-import 'screens/welcome_screen.dart';
+import 'services/welcome_screen.dart';
 import 'services/login_screen.dart';
 import 'services/register_screen.dart';
 import 'screens/siswa/dashboard.dart';
 import 'screens/siswa/input_makanan.dart';
 import 'screens/siswa/articles.dart';
 import 'screens/siswa/article_detail.dart';
-import 'screens/siswa/profile.dart';
+import 'screens/profile.dart';
 
 import 'screens/pemerintah_screen.dart';
 import 'screens/sekolah_screen.dart';
