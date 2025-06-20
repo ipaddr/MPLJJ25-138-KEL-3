@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-<<<<<<< HEAD
-import '../widget/bottom_nav_bar.dart';
-=======
 import 'package:firebase_auth/firebase_auth.dart';
->>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
 import '../screens/profile.dart';
 import 'input_artikel_screen.dart';
 
@@ -35,76 +31,66 @@ class _SekolahScreenState extends State<SekolahScreen> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-<<<<<<< HEAD
       appBar:
           _selectedIndex == 0
               ? AppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: theme.scaffoldBackgroundColor,
                 elevation: 0,
-
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    tooltip: 'Keluar',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Konfirmasi Keluar'),
+                              content: const Text(
+                                'Apakah Anda yakin ingin keluar dari aplikasi?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Batal'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    await FirebaseAuth.instance.signOut();
+                                    if (context.mounted) {
+                                      Navigator.popUntil(
+                                        context,
+                                        (route) => route.isFirst,
+                                      );
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/login',
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Keluar'),
+                                ),
+                              ],
+                            ),
+                      );
+                    },
+                  ),
+                ],
                 title: Text(
                   'Dashboard Sekolah',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: theme.colorScheme.onBackground,
                   ),
-=======
-      appBar: _selectedIndex == 0
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              backgroundColor: theme.scaffoldBackgroundColor,
-              elevation: 0,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.logout),
-                  tooltip: 'Keluar',
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Konfirmasi Keluar'),
-                        content:
-                            const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Batal'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                              if (context.mounted) {
-                                Navigator.popUntil(context, (route) => route.isFirst);
-                                Navigator.pushReplacementNamed(context, '/login');
-                              }
-                            },
-                            child: const Text('Keluar'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
->>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                 ),
-              ],
-              title: Text(
-                'Dashboard Sekolah',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: theme.colorScheme.onBackground,
-                ),
-              ),
-            )
-          : null,
-
+              )
+              : null,
       body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const InputArtikelScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const InputArtikelScreen()),
           );
         },
         backgroundColor: Colors.teal,
@@ -112,7 +98,6 @@ class _SekolahScreenState extends State<SekolahScreen> {
         tooltip: 'Tambah Artikel',
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 6,
@@ -290,12 +275,19 @@ class _SekolahDashboardContent extends StatelessWidget {
                           const SizedBox(height: 16),
                           _nutrisiRow(theme, 'Protein', 0.9, Colors.green),
                           _nutrisiRow(theme, 'Lemak', 0.7, Colors.amber),
-                          _nutrisiRow(theme, 'Karbohidrat', 0.5, Colors.lightGreenAccent),
+                          _nutrisiRow(
+                            theme,
+                            'Karbohidrat',
+                            0.5,
+                            Colors.lightGreenAccent,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 80), // Ruang ekstra agar tidak ketutupan FAB
+                  const SizedBox(
+                    height: 80,
+                  ), // Ruang ekstra agar tidak ketutupan FAB
                 ],
               ),
             ),
