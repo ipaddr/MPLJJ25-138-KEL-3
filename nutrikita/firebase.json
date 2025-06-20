@@ -1,0 +1,28 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "nutri-a6e15",
+          "appId": "1:147111301200:android:7858f337e3edc3dd3c0155",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "nutri-a6e15",
+          "configurations": {
+            "android": "1:147111301200:android:7858f337e3edc3dd3c0155",
+            "ios": "1:147111301200:ios:f0a5285d338417273c0155",
+            "macos": "1:147111301200:ios:f0a5285d338417273c0155",
+            "web": "1:147111301200:web:f7f83a90c0aad41b3c0155",
+            "windows": "1:147111301200:web:feb16dc6b7f573c83c0155"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "singleProjectMode": true
+  }
+}
