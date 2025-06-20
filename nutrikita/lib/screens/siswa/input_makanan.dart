@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:firebase_auth/firebase_auth.dart';
+=======
+import 'package:firebase_core/firebase_core.dart';
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
 
 class InputMakananScreen extends StatefulWidget {
   const InputMakananScreen({super.key});
@@ -14,9 +18,15 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
   String? _selectedUnit;
   String? _selectedFoodSource;
 
+<<<<<<< HEAD
   final TextEditingController _foodNameController = TextEditingController();
   final TextEditingController _portionController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+=======
+  final TextEditingController makananController = TextEditingController();
+  final TextEditingController porsiController = TextEditingController();
+  final TextEditingController catatanController = TextEditingController();
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
 
   final List<String> _mealTimes = [
     'Sarapan',
@@ -26,6 +36,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'Camilan Sore',
     'Lainnya',
   ];
+
   final List<String> _units = [
     'gram',
     'ml',
@@ -35,6 +46,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'cup',
     'lainnya',
   ];
+
   final List<String> _foodSources = [
     'Homemade',
     'Restoran',
@@ -43,6 +55,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'Lainnya',
   ];
 
+<<<<<<< HEAD
   bool _isLoading = false;
 
   Future<void> _submit() async {
@@ -53,10 +66,17 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         _selectedFoodSource == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mohon lengkapi semua data utama!')),
+=======
+  Future<void> _simpanData() async {
+    if (_selectedMealTime == null || makananController.text.isEmpty || porsiController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon lengkapi semua data')),
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
       );
       return;
     }
 
+<<<<<<< HEAD
     setState(() => _isLoading = true);
 
     final user = FirebaseAuth.instance.currentUser;
@@ -106,6 +126,38 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     }
   }
 
+=======
+    try {
+      await FirebaseFirestore.instance.collection('makanan').add({
+        'waktuMakan': _selectedMealTime,
+        'namaMakanan': makananController.text,
+        'jumlah': porsiController.text,
+        'satuan': _selectedUnit,
+        'sumber': _selectedFoodSource,
+        'catatan': catatanController.text,
+        'tanggal': Timestamp.now(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data makanan berhasil diinput!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan data: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    makananController.dispose();
+    porsiController.dispose();
+    catatanController.dispose();
+    super.dispose();
+  }
+
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -151,7 +203,11 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                         label: 'Makanan / Minuman',
                         hint: 'Masukkan makanan / minuman yang dikonsumsi',
                         maxLines: 3,
+<<<<<<< HEAD
                         controller: _foodNameController,
+=======
+                        controller: makananController,
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                       ),
                       const SizedBox(height: 16),
                       Text('Ukuran Porsi', style: theme.textTheme.labelLarge),
@@ -161,7 +217,11 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                           Expanded(
                             flex: 1,
                             child: TextFormField(
+<<<<<<< HEAD
                               controller: _portionController,
+=======
+                              controller: porsiController,
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 hintText: 'Banyak',
@@ -178,6 +238,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                                 border: OutlineInputBorder(),
                               ),
                               value: _selectedUnit,
+<<<<<<< HEAD
                               items:
                                   _units
                                       .map(
@@ -189,6 +250,13 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                                       .toList(),
                               onChanged:
                                   (val) => setState(() => _selectedUnit = val),
+=======
+                              items: _units.map((unit) => DropdownMenuItem(
+                                    value: unit,
+                                    child: Text(unit),
+                                  )).toList(),
+                              onChanged: (val) => setState(() => _selectedUnit = val),
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                             ),
                           ),
                         ],
@@ -226,10 +294,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                                 size: 40,
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                'Tambahkan foto makanan',
-                                style: TextStyle(color: Colors.grey.shade600),
-                              ),
+                              Text('Tambahkan foto makanan', style: TextStyle(color: Colors.grey.shade600)),
                             ],
                           ),
                         ),
@@ -239,7 +304,11 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                         label: 'Catatan',
                         hint: 'Masukkan keterangan tambahan',
                         maxLines: 3,
+<<<<<<< HEAD
                         controller: _noteController,
+=======
+                        controller: catatanController,
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
@@ -252,6 +321,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
+<<<<<<< HEAD
                           onPressed: _isLoading ? null : _submit,
                           child:
                               _isLoading
@@ -271,6 +341,17 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
+=======
+                          onPressed: _simpanData,
+                          child: const Text(
+                            'Simpan',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                         ),
                       ),
                     ],
@@ -302,12 +383,19 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
             border: const OutlineInputBorder(),
           ),
           value: value,
+<<<<<<< HEAD
           items:
               items
                   .map(
                     (item) => DropdownMenuItem(value: item, child: Text(item)),
                   )
                   .toList(),
+=======
+          items: items.map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(item),
+              )).toList(),
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
           onChanged: onChanged,
         ),
       ],

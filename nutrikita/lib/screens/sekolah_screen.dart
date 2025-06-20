@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+<<<<<<< HEAD
 import '../widget/bottom_nav_bar.dart';
+=======
+import 'package:firebase_auth/firebase_auth.dart';
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
 import '../screens/profile.dart';
+import 'input_artikel_screen.dart';
 
 class SekolahScreen extends StatefulWidget {
   const SekolahScreen({super.key});
@@ -14,7 +19,7 @@ class _SekolahScreenState extends State<SekolahScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
-    _SekolahDashboardContent(),
+    const _SekolahDashboardContent(),
     const ProfileScreen(),
   ];
 
@@ -30,6 +35,7 @@ class _SekolahScreenState extends State<SekolahScreen> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+<<<<<<< HEAD
       appBar:
           _selectedIndex == 0
               ? AppBar(
@@ -42,24 +48,101 @@ class _SekolahScreenState extends State<SekolahScreen> {
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: theme.colorScheme.onBackground,
                   ),
+=======
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              elevation: 0,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  tooltip: 'Keluar',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Konfirmasi Keluar'),
+                        content:
+                            const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Batal'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await FirebaseAuth.instance.signOut();
+                              if (context.mounted) {
+                                Navigator.popUntil(context, (route) => route.isFirst);
+                                Navigator.pushReplacementNamed(context, '/login');
+                              }
+                            },
+                            child: const Text('Keluar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+>>>>>>> 0b72225008f74b7ea6b57dc29e3682c8cee206a3
                 ),
-              )
-              : null,
+              ],
+              title: Text(
+                'Dashboard Sekolah',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: theme.colorScheme.onBackground,
+                ),
+              ),
+            )
+          : null,
+
       body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const InputArtikelScreen(),
+            ),
+          );
+        },
+        backgroundColor: Colors.teal,
+        child: const Icon(Icons.post_add),
+        tooltip: 'Tambah Artikel',
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.home),
+                color: _selectedIndex == 0 ? Colors.teal : Colors.grey,
+                onPressed: () => _onItemTapped(0),
+              ),
+              const SizedBox(width: 40), // Space for FAB
+              IconButton(
+                icon: const Icon(Icons.person),
+                color: _selectedIndex == 1 ? Colors.teal : Colors.grey,
+                onPressed: () => _onItemTapped(1),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-// Widget untuk konten dashboard sekolah
 class _SekolahDashboardContent extends StatelessWidget {
+  const _SekolahDashboardContent();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -74,7 +157,6 @@ class _SekolahDashboardContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Card(
-                    margin: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -132,7 +214,6 @@ class _SekolahDashboardContent extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    margin: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
@@ -195,7 +276,6 @@ class _SekolahDashboardContent extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    margin: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
@@ -210,16 +290,12 @@ class _SekolahDashboardContent extends StatelessWidget {
                           const SizedBox(height: 16),
                           _nutrisiRow(theme, 'Protein', 0.9, Colors.green),
                           _nutrisiRow(theme, 'Lemak', 0.7, Colors.amber),
-                          _nutrisiRow(
-                            theme,
-                            'Karbohidrat',
-                            0.5,
-                            Colors.lightGreenAccent,
-                          ),
+                          _nutrisiRow(theme, 'Karbohidrat', 0.5, Colors.lightGreenAccent),
                         ],
                       ),
                     ),
                   ),
+                  const SizedBox(height: 80), // Ruang ekstra agar tidak ketutupan FAB
                 ],
               ),
             ),
