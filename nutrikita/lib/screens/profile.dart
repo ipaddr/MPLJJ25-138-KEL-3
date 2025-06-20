@@ -48,6 +48,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profil', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Keluar',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Konfirmasi Keluar'),
+                      content: const Text(
+                        'Apakah Anda yakin ingin keluar dari aplikasi?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Batal'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            if (context.mounted) {
+                              Navigator.popUntil(
+                                context,
+                                (route) => route.isFirst,
+                              );
+                              Navigator.pushReplacementNamed(context, '/login');
+                            }
+                          },
+                          child: const Text('Keluar'),
+                        ),
+                      ],
+                    ),
+              );
+            },
+          ),
+        ],
       ),
       body:
           isLoading
@@ -106,10 +143,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 8),
                       SmallButton(
                         onPressed: () async {
-                          await FirebaseAuth.instance.signOut();
-                          if (context.mounted) {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          }
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text('Konfirmasi Keluar'),
+                                  content: const Text(
+                                    'Apakah Anda yakin ingin keluar dari aplikasi?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Batal'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await FirebaseAuth.instance.signOut();
+                                        if (context.mounted) {
+                                          Navigator.popUntil(
+                                            context,
+                                            (route) => route.isFirst,
+                                          );
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            '/login',
+                                          );
+                                        }
+                                      },
+                                      child: const Text('Keluar'),
+                                    ),
+                                  ],
+                                ),
+                          );
                         },
                         icon: Icons.logout,
                         label: 'Logout',

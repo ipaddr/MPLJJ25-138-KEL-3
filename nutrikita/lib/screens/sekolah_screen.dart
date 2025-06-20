@@ -37,46 +37,7 @@ class _SekolahScreenState extends State<SekolahScreen> {
                 automaticallyImplyLeading: false,
                 backgroundColor: theme.scaffoldBackgroundColor,
                 elevation: 0,
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.logout),
-                    tooltip: 'Keluar',
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => AlertDialog(
-                              title: const Text('Konfirmasi Keluar'),
-                              content: const Text(
-                                'Apakah Anda yakin ingin keluar dari aplikasi?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Batal'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    await FirebaseAuth.instance.signOut();
-                                    if (context.mounted) {
-                                      Navigator.popUntil(
-                                        context,
-                                        (route) => route.isFirst,
-                                      );
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/login',
-                                      );
-                                    }
-                                  },
-                                  child: const Text('Keluar'),
-                                ),
-                              ],
-                            ),
-                      );
-                    },
-                  ),
-                ],
+
                 title: Text(
                   'Dashboard Sekolah',
                   style: theme.textTheme.headlineMedium?.copyWith(
