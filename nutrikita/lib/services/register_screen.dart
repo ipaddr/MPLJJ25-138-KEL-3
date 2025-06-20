@@ -1,7 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final namaController = TextEditingController();
+  final nisnController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    namaController.dispose();
+    nisnController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _register() async {
+    final nama = namaController.text.trim();
+    final nisn = nisnController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (nama.isEmpty || nisn.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Semua field harus diisi')));
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'nama': nama,
+          'nisn': nisn,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registrasi gagal: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +104,25 @@ class RegisterScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildLabel(theme, 'Nama Lengkap'),
-                        _buildInputField(hintText: 'Masukkan nama lengkap Anda'),
+                        _buildInputField(
+                          controller: namaController,
+                          hintText: 'Masukkan nama lengkap Anda',
+                        ),
                         _buildLabel(theme, 'NISN'),
                         _buildInputField(
+                          controller: nisnController,
                           hintText: 'Masukkan NISN Anda',
                           keyboardType: TextInputType.number,
                         ),
                         _buildLabel(theme, 'Email'),
                         _buildInputField(
+                          controller: emailController,
                           hintText: 'Masukkan email Anda',
                           keyboardType: TextInputType.emailAddress,
                         ),
                         _buildLabel(theme, 'Kata Sandi'),
                         TextFormField(
+                          controller: passwordController,
                           obscureText: true,
                           decoration: const InputDecoration(
                             hintText: 'Buat kata sandi Anda',
@@ -73,13 +145,18 @@ class RegisterScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'DAFTAR SEKARANG',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                            onPressed: isLoading ? null : _register,
+                            child:
+                                isLoading
+                                    ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                    : const Text(
+                                      'DAFTAR SEKARANG',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                           ),
                         ),
                       ],
@@ -120,24 +197,21 @@ class RegisterScreen extends StatelessWidget {
   Widget _buildLabel(ThemeData theme, String label) {
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 8),
-      child: Text(
-        label,
-        style: theme.textTheme.labelLarge,
-      ),
+      child: Text(label, style: theme.textTheme.labelLarge),
     );
   }
 
   Widget _buildInputField({
+    required TextEditingController controller,
     required String hintText,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: TextFormField(
+        controller: controller,
         keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hintText,
-        ),
+        decoration: InputDecoration(hintText: hintText),
       ),
     );
   }

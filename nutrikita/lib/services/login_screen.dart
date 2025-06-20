@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,7 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   String? selectedRole;
 
-  void _login() {
+  void _login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
@@ -23,14 +24,25 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (selectedRole == 'Siswa') {
-      Navigator.pushReplacementNamed(context, '/siswa');
-    } else if (selectedRole == 'Orang Tua') {
-      Navigator.pushReplacementNamed(context, '/ortu');
-    } else if (selectedRole == 'Sekolah') {
-      Navigator.pushReplacementNamed(context, '/sekolah');
-    } else if (selectedRole == 'Pemerintah') {
-      Navigator.pushReplacementNamed(context, '/pemerintah');
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // Navigasi sesuai role
+      if (selectedRole == 'Siswa') {
+        Navigator.pushReplacementNamed(context, '/siswa');
+      } else if (selectedRole == 'Orang Tua') {
+        Navigator.pushReplacementNamed(context, '/ortu');
+      } else if (selectedRole == 'Sekolah') {
+        Navigator.pushReplacementNamed(context, '/sekolah');
+      } else if (selectedRole == 'Pemerintah') {
+        Navigator.pushReplacementNamed(context, '/pemerintah');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login gagal: ${e.toString()}')));
     }
   }
 
@@ -69,7 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -79,7 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -87,13 +103,21 @@ class _LoginPageState extends State<LoginPage> {
                 value: selectedRole,
                 decoration: InputDecoration(
                   labelText: 'Pilih Peran',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'Siswa', child: Text('Siswa')),
-                  DropdownMenuItem(value: 'Orang Tua', child: Text('Orang Tua')),
+                  DropdownMenuItem(
+                    value: 'Orang Tua',
+                    child: Text('Orang Tua'),
+                  ),
                   DropdownMenuItem(value: 'Sekolah', child: Text('Sekolah')),
-                  DropdownMenuItem(value: 'Pemerintah', child: Text('Pemerintah')),
+                  DropdownMenuItem(
+                    value: 'Pemerintah',
+                    child: Text('Pemerintah'),
+                  ),
                 ],
                 onChanged: (value) {
                   setState(() {
@@ -108,7 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF5A3E36),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: _login,
                   child: const Text('Login', style: TextStyle(fontSize: 16)),
@@ -122,7 +148,9 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: _loginWithGoogle,
                   child: Row(
