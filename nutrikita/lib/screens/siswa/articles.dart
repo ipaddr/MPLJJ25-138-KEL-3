@@ -1,7 +1,9 @@
-// File: lib/screens/siswa/article_list_screen.dart
+// File: lib/screens/siswa/articles.dart
 
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'article_detail.dart';
+import 'article_detail.dart' as detail;
 import '../../utils/app_colors.dart';
 
 class ArticlesScreen extends StatefulWidget {
@@ -12,14 +14,8 @@ class ArticlesScreen extends StatefulWidget {
 }
 
 class _ArticlesScreenState extends State<ArticlesScreen> {
-  // Dummy list of categories
-  final List<String> _categories = [
-    'Semua',
-    'Resep Makanan',
-    'Gaya Hidup',
-    'Olahraga',
-  ];
-  String _selectedCategory = 'Semua'; // Default selected category
+  final List<String> _categories = ['Semua', 'Resep Makanan', 'Gaya Hidup', 'Olahraga'];
+  String _selectedCategory = 'Semua';
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +27,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              automaticallyImplyLeading: false, // Tidak tampilkan tombol back
+              automaticallyImplyLeading: false,
               floating: true,
               pinned: true,
               snap: true,
@@ -42,9 +38,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 titlePadding: const EdgeInsets.only(left: 24.0, bottom: 70.0),
                 title: Text(
                   'Artikel',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: theme.colorScheme.onBackground,
-                  ),
+                  style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onBackground),
                 ),
               ),
               bottom: PreferredSize(
@@ -54,84 +48,56 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Cari',
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      suffixIcon: Icon(
-                        Icons.clear,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 0,
-                        horizontal: 16,
-                      ),
+                      prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant),
+                      suffixIcon: Icon(Icons.clear, color: theme.colorScheme.onSurfaceVariant),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                       filled: true,
                       fillColor: theme.colorScheme.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                     style: theme.textTheme.bodyMedium,
+                    onChanged: (value) {
+                      // Tambahkan fitur pencarian nanti jika perlu
+                    },
                   ),
                 ),
               ),
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16.0,
-                  horizontal: 24.0,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children:
-                        _categories.map((category) {
-                          final bool isSelected = _selectedCategory == category;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: ChoiceChip(
-                              label: Text(category),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                setState(() {
-                                  _selectedCategory = category;
-                                });
-                              },
-                              // Style chip dari theme.chipTheme
-                              selectedColor:
-                                  theme
-                                      .colorScheme
-                                      .primaryContainer, // Warna saat dipilih
-                              backgroundColor:
-                                  theme
-                                      .colorScheme
-                                      .surfaceVariant, // Warna background
-                              labelStyle: theme.textTheme.labelMedium?.copyWith(
-                                color:
-                                    isSelected
-                                        ? theme.colorScheme.onPrimaryContainer
-                                        : theme.colorScheme.onSurfaceVariant,
-                                fontWeight:
-                                    isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side:
-                                    isSelected
-                                        ? BorderSide.none
-                                        : BorderSide(
-                                          color: theme.colorScheme.outline,
-                                        ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              // elevation: isSelected ? 2 : 0,
-                            ),
-                          );
-                        }).toList(),
+                    children: _categories.map((category) {
+                      final bool isSelected = _selectedCategory == category;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: ChoiceChip(
+                          label: Text(category),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
+                          selectedColor: theme.colorScheme.primaryContainer,
+                          backgroundColor: theme.colorScheme.surfaceVariant,
+                          labelStyle: theme.textTheme.labelMedium?.copyWith(
+                            color: isSelected ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: isSelected ? BorderSide.none : BorderSide(color: theme.colorScheme.outline),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
@@ -140,38 +106,51 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  // Bagian 'Terbaru'
                   Text(
                     'Terbaru',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.onBackground,
-                    ),
+                    style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onBackground),
                   ),
                   const SizedBox(height: 16),
-                  _buildArticleCard(
-                    theme,
-                    'Judul Artikel 1',
-                    'Isi artikel singkat tentang artikel pertama...',
-                    'Gaya Hidup',
-                  ),
-                  _buildArticleCard(
-                    theme,
-                    'Judul Artikel 2',
-                    'Isi artikel singkat tentang artikel kedua...',
-                    'Resep Makanan',
-                  ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('artikel').snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Text('Belum ada artikel.');
+                      }
 
-                  _buildArticleCard(
-                    theme,
-                    'Judul Artikel 3',
-                    'Isi artikel singkat tentang artikel ketiga...',
-                    'Olahraga',
-                  ),
-                  _buildArticleCard(
-                    theme,
-                    'Judul Artikel 4',
-                    'Isi artikel singkat tentang artikel keempat...',
-                    'Olahraga',
+                      // Filter berdasarkan kategori jika bukan "Semua"
+                      final filteredDocs = _selectedCategory == 'Semua'
+                          ? snapshot.data!.docs
+                          : snapshot.data!.docs.where((doc) {
+                              final data = doc.data() as Map<String, dynamic>;
+                              final tags = data['tags'] as List<dynamic>? ?? [];
+                              return tags.contains(_selectedCategory);
+                            }).toList();
+
+                      if (filteredDocs.isEmpty) {
+                        return const Text('Artikel tidak ditemukan untuk kategori ini.');
+                      }
+
+                      return Column(
+                        children: filteredDocs.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          return _buildArticleCard(
+                            theme: theme,
+                            title: data['title'] ?? 'Tanpa Judul',
+                            content: data['content'] ?? '',
+                            tag: data['tags'] != null && (data['tags'] as List).isNotEmpty
+                                ? (data['tags'] as List).first
+                                : 'Umum',
+                            date: data['date'] ?? '',
+                            imageUrl: data['imageUrl'] as String?,
+                            allTags: List<String>.from(data['tags'] ?? []),
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
                   const SizedBox(height: 32),
                 ]),
@@ -183,19 +162,56 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
     );
   }
 
-  Widget _buildArticleCard(
-    ThemeData theme,
-    String title,
-    String content,
-    String tag,
-  ) {
+  Widget _buildArticleCard({
+    required ThemeData theme,
+    required String title,
+    required String content,
+    required String tag,
+    required String date,
+    required String? imageUrl,
+    required List<String> allTags,
+  }) {
+    Widget imageWidget;
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      if (imageUrl.startsWith('data:image')) {
+        try {
+          final base64Data = imageUrl.split(',').last;
+          final bytes = base64Decode(base64Data);
+          imageWidget = Image.memory(
+            bytes,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _placeholderImage(theme);
+            },
+          );
+        } catch (e) {
+          // Jika decode gagal, tampilkan placeholder
+          imageWidget = _placeholderImage(theme);
+        }
+      } else {
+        imageWidget = Image.network(
+          imageUrl,
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _placeholderImage(theme);
+          },
+        );
+      }
+    } else {
+      imageWidget = _placeholderImage(theme);
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      color: theme.colorScheme.surface, // gunakan dari theme
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(24), // konsisten dengan input makanan
+        padding: const EdgeInsets.all(24),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -203,42 +219,14 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text(
-                    content,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(content, maxLines: 3, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
-                    children: [
-                      Chip(
-                        label: Text(tag),
-                        backgroundColor: theme.colorScheme.primaryContainer,
-                        labelStyle: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: EdgeInsets.zero,
-                      ),
-                    ],
+                    children: allTags.map((t) => Chip(label: Text(t))).toList(),
                   ),
                   const SizedBox(height: 12),
                   Align(
@@ -248,20 +236,16 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) => ArticleDetailScreen(
-                                  title: title,
-                                  content:
-                                      'Ini adalah konten lengkap untuk "$title". ...',
-                                  tags: [tag, 'Nutrisi', 'Kesehatan'],
-                                  date: '12 Juni 2025',
-                                ),
+                            builder: (context) => detail.ArticleDetailScreen(
+                              title: title,
+                              content: content,
+                              date: date,
+                              tags: allTags,
+                              imageUrl: imageUrl,
+                            ),
                           ),
                         );
                       },
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.darkText, // Warna teks
-                      ),
                       child: const Text('Baca Selengkapnya'),
                     ),
                   ),
@@ -269,22 +253,25 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               ),
             ),
             const SizedBox(width: 16),
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.image,
-                size: 40,
-                color: theme.colorScheme.outline,
-              ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: imageWidget,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _placeholderImage(ThemeData theme) {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.image, size: 40, color: theme.colorScheme.outline),
     );
   }
 }

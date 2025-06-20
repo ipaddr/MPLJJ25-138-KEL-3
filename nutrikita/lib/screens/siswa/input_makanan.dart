@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class InputMakananScreen extends StatefulWidget {
   const InputMakananScreen({super.key});
@@ -12,6 +14,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
   String? _selectedUnit;
   String? _selectedFoodSource;
 
+  final TextEditingController makananController = TextEditingController();
+  final TextEditingController porsiController = TextEditingController();
+  final TextEditingController catatanController = TextEditingController();
+
   final List<String> _mealTimes = [
     'Sarapan',
     'Makan Siang',
@@ -20,6 +26,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'Camilan Sore',
     'Lainnya',
   ];
+
   final List<String> _units = [
     'gram',
     'ml',
@@ -29,6 +36,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'cup',
     'lainnya',
   ];
+
   final List<String> _foodSources = [
     'Homemade',
     'Restoran',
@@ -36,6 +44,44 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     'Kantin',
     'Lainnya',
   ];
+
+  Future<void> _simpanData() async {
+    if (_selectedMealTime == null || makananController.text.isEmpty || porsiController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon lengkapi semua data')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('makanan').add({
+        'waktuMakan': _selectedMealTime,
+        'namaMakanan': makananController.text,
+        'jumlah': porsiController.text,
+        'satuan': _selectedUnit,
+        'sumber': _selectedFoodSource,
+        'catatan': catatanController.text,
+        'tanggal': Timestamp.now(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data makanan berhasil diinput!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan data: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    makananController.dispose();
+    porsiController.dispose();
+    catatanController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,18 +127,17 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                         label: 'Makanan / Minuman',
                         hint: 'Masukkan makanan / minuman yang dikonsumsi',
                         maxLines: 3,
+                        controller: makananController,
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Ukuran Porsi',
-                        style: theme.textTheme.labelLarge,
-                      ),
+                      Text('Ukuran Porsi', style: theme.textTheme.labelLarge),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Expanded(
                             flex: 1,
                             child: TextFormField(
+                              controller: porsiController,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 hintText: 'Banyak',
@@ -109,12 +154,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                                 border: OutlineInputBorder(),
                               ),
                               value: _selectedUnit,
-                              items: _units
-                                  .map((unit) => DropdownMenuItem(
-                                        value: unit,
-                                        child: Text(unit),
-                                      ))
-                                  .toList(),
+                              items: _units.map((unit) => DropdownMenuItem(
+                                    value: unit,
+                                    child: Text(unit),
+                                  )).toList(),
                               onChanged: (val) => setState(() => _selectedUnit = val),
                             ),
                           ),
@@ -148,10 +191,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                             children: [
                               Icon(Icons.add_photo_alternate_outlined, color: Colors.grey.shade600, size: 40),
                               const SizedBox(height: 8),
-                              Text(
-                                'Tambahkan foto makanan',
-                                style: TextStyle(color: Colors.grey.shade600),
-                              ),
+                              Text('Tambahkan foto makanan', style: TextStyle(color: Colors.grey.shade600)),
                             ],
                           ),
                         ),
@@ -161,6 +201,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                         label: 'Catatan',
                         hint: 'Masukkan keterangan tambahan',
                         maxLines: 3,
+                        controller: catatanController,
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
@@ -173,12 +214,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Data makanan berhasil diinput!')),
-                            );
-                            Navigator.pop(context);
-                          },
+                          onPressed: _simpanData,
                           child: const Text(
                             'Simpan',
                             style: TextStyle(
@@ -218,12 +254,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
             border: const OutlineInputBorder(),
           ),
           value: value,
-          items: items
-              .map((item) => DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  ))
-              .toList(),
+          items: items.map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(item),
+              )).toList(),
           onChanged: onChanged,
         ),
       ],
@@ -234,6 +268,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     required String label,
     required String hint,
     int maxLines = 1,
+    TextEditingController? controller,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,6 +276,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         Text(label, style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
           maxLines: maxLines,
           decoration: InputDecoration(
             hintText: hint,

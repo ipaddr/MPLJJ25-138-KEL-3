@@ -11,15 +11,14 @@ class PemerintahScreen extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: theme.colorScheme.primary,
         elevation: 0,
-        title: const Text('Dashboard Nasional'),
+        title: const Text('Dashboard Pemerintah'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Keluar',
             onPressed: () {
-              // Navigasi ke halaman login / logout logic
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
@@ -31,14 +30,16 @@ class PemerintahScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ===== Program Gizi Nasional =====
+              // Header Section
               Text(
-                'Program Gizi Nasional',
-                style: theme.textTheme.titleLarge?.copyWith(
+                'Selamat Datang di Dashboard Nasional',
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Ringkasan Data
               Row(
                 children: [
                   Expanded(
@@ -74,7 +75,25 @@ class PemerintahScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // ===== Status Umum Gizi Nasional =====
+              // Tombol Input Artikel
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/input_artikel');
+                  },
+                  icon: const Icon(Icons.edit_note),
+                  label: const Text('Input Artikel'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Status Gizi Nasional
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: Padding(
@@ -87,7 +106,7 @@ class PemerintahScreen extends StatelessWidget {
                           Image.asset('assets/icons/status.png', height: 28),
                           const SizedBox(width: 8),
                           Text(
-                            'Status Umum Gizi Nasional',
+                            'Status Gizi Nasional',
                             style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -102,7 +121,7 @@ class PemerintahScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // ===== Notifikasi Penting =====
+              // Notifikasi
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
@@ -142,10 +161,13 @@ class PemerintahScreen extends StatelessWidget {
         unselectedItemColor: theme.colorScheme.onSurfaceVariant,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Input Artikel'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Akun'),
         ],
         onTap: (index) {
           if (index == 1) {
+            Navigator.pushNamed(context, '/input_artikel');
+          } else if (index == 2) {
             Navigator.pushNamed(context, '/akun');
           }
         },
@@ -178,11 +200,7 @@ class PemerintahScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
+            Text(label, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -205,10 +223,7 @@ class PemerintahScreen extends StatelessWidget {
   Widget _notifikasiItem(ThemeData theme, String pesan) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        pesan,
-        style: theme.textTheme.bodyMedium,
-      ),
+      child: Text(pesan, style: theme.textTheme.bodyMedium),
     );
   }
 }
