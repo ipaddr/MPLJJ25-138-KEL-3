@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../widget/bottom_nav_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../screens/profile.dart';
 
 class SekolahScreen extends StatefulWidget {
