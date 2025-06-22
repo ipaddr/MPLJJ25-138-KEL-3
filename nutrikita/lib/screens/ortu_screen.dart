@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widget/bottom_nav_bar.dart';
-import '../screens/profile.dart'; // Pastikan path sudah benar
+import '../screens/profile.dart';
 
 class OrtuScreen extends StatefulWidget {
   const OrtuScreen({super.key});
@@ -10,8 +12,10 @@ class OrtuScreen extends StatefulWidget {
 }
 
 class _OrtuScreenState extends State<OrtuScreen> {
-  String selectedQuality = '';
   final TextEditingController feedbackController = TextEditingController();
+  final TextEditingController namaOrtuController = TextEditingController();
+  final TextEditingController sekolahAnakController = TextEditingController();
+  String selectedQuality = '';
   int _selectedIndex = 0;
 
   void selectQuality(String quality) {
@@ -26,277 +30,200 @@ class _OrtuScreenState extends State<OrtuScreen> {
     });
   }
 
+  Future<void> submitFeedback(BuildContext context) async {
+    if (feedbackController.text.isEmpty ||
+        selectedQuality.isEmpty ||
+        namaOrtuController.text.isEmpty ||
+        sekolahAnakController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Lengkapi semua bagian sebelum mengirim.")),
+      );
+      return;
+    }
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await FirebaseFirestore.instance.collection('feedback_ortu').add({
+        'feedback': feedbackController.text,
+        'kualitas': selectedQuality,
+        'tanggal': Timestamp.now(),
+        'nama': namaOrtuController.text,
+        'sekolah': sekolahAnakController.text,
+        'email': user?.email ?? 'anonim',
+      });
+
+      feedbackController.clear();
+      namaOrtuController.clear();
+      sekolahAnakController.clear();
+      selectedQuality = '';
+      setState(() {});
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Feedback Dikirim"),
+          content: const Text("Terima kasih atas masukan Anda."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal mengirim feedback: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final List<Widget> _widgetOptions = [
-      _OrtuFeedbackContent(
-        selectedQuality: selectedQuality,
-        feedbackController: feedbackController,
-        selectQuality: selectQuality,
-      ),
+    final pages = [
+      _buildHomeContent(theme),
       const ProfileScreen(),
     ];
 
     return Scaffold(
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              title: const Text("Beranda Orang Tua"),
+              backgroundColor: theme.colorScheme.background,
+              foregroundColor: theme.colorScheme.onBackground,
+              elevation: 0,
+            )
+          : null,
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar:
-          _selectedIndex == 0
-              ? AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: theme.scaffoldBackgroundColor,
-                elevation: 0,
-                title: Text(
-                  'Feedback Orang Tua',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.onBackground,
-                  ),
-                ),
-              )
-              : null,
-      body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: pages,
+      ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
   }
-}
 
-// Widget untuk konten feedback ortu
-class _OrtuFeedbackContent extends StatelessWidget {
-  final String selectedQuality;
-  final TextEditingController feedbackController;
-  final Function(String) selectQuality;
-
-  const _OrtuFeedbackContent({
-    required this.selectedQuality,
-    required this.feedbackController,
-    required this.selectQuality,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Card(
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Feedback Tumbuh dan Gizi Anak",
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onBackground,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: feedbackController,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                              hintText: "Tuliskan umpan balik Anda di sini...",
-                              filled: true,
-                              fillColor: theme.colorScheme.surface,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Contoh: Perubahan yang Anda lihat pada anak, komentar tentang program makan gratis.",
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            "Kualitas Makanan",
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onBackground,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            children: [
-                              _qualityButton("Sangat Baik", theme),
-                              _qualityButton("Baik", theme),
-                              _qualityButton("Cukup", theme),
-                              _qualityButton("Kurang", theme),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            "Pengalaman Lain",
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onBackground,
-                            ),
-                          ),
-                          Text(
-                            "Berbagi pengalaman dan saran.",
-                            style: theme.textTheme.bodySmall,
-                          ),
-                          const SizedBox(height: 16),
-                          _feedbackItem(
-                            "💡",
-                            "Saran",
-                            "Usulan lebih banyak sayuran.",
-                            theme,
-                          ),
-                          const SizedBox(height: 12),
-                          _feedbackItem(
-                            "❤️",
-                            "Testimoni",
-                            "Anak saya lebih bertenaga!",
-                            theme,
-                          ),
-                          const SizedBox(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor: theme.colorScheme.surface,
-                                  side: BorderSide(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 32,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                child: Text(
-                                  "Batal",
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (_) => AlertDialog(
-                                          title: const Text("Feedback Dikirim"),
-                                          content: const Text(
-                                            "Terima kasih atas masukan Anda.",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed:
-                                                  () => Navigator.pop(context),
-                                              child: const Text("OK"),
-                                            ),
-                                          ],
-                                        ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: theme.colorScheme.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 32,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                child: Text(
-                                  "Kirim Feedback",
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    color: theme.colorScheme.onPrimary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
+  Widget _buildHomeContent(ThemeData theme) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildFeedbackForm(theme),
+          const SizedBox(height: 24),
+          Text(
+            "Feedback Orang Tua Lain",
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 12),
+          _buildFeedbackList(theme),
         ],
       ),
     );
   }
 
-  Widget _qualityButton(String label, ThemeData theme) {
-    bool isSelected = selectedQuality == label;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      selectedColor: theme.colorScheme.primary,
-      labelStyle: theme.textTheme.bodyMedium?.copyWith(
-        color:
-            isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface,
+  Widget _buildFeedbackForm(ThemeData theme) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(
+              "Kirim Feedback",
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: namaOrtuController,
+              decoration: const InputDecoration(labelText: "Nama Orang Tua"),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: sekolahAnakController,
+              decoration: const InputDecoration(labelText: "Sekolah Anak"),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: feedbackController,
+              maxLines: 3,
+              decoration: const InputDecoration(labelText: "Feedback"),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children: ["Sangat Baik", "Baik", "Cukup", "Kurang"]
+                  .map((label) => ChoiceChip(
+                        label: Text(label),
+                        selected: selectedQuality == label,
+                        onSelected: (_) => selectQuality(label),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => submitFeedback(context),
+              child: const Text("Kirim"),
+            )
+          ],
+        ),
       ),
-      onSelected: (_) => selectQuality(label),
-      backgroundColor: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
-  Widget _feedbackItem(
-    String emoji,
-    String title,
-    String text,
-    ThemeData theme,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 24)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+  Widget _buildFeedbackList(ThemeData theme) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('feedback_ortu')
+          .orderBy('tanggal', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        final docs = snapshot.data!.docs;
+
+        return Column(
+          children: docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final feedback = data['feedback'] ?? '-';
+            final nama = data['nama'] ?? '';
+            final email = data['email'] ?? '';
+            final sekolah = data['sekolah'] ?? '';
+            final kualitas = data['kualitas'] ?? '';
+
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      feedback,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    if (nama.isNotEmpty) Text("Nama: $nama"),
+                    if (email.isNotEmpty) Text("Email: $email"),
+                    if (sekolah.isNotEmpty) Text("Sekolah: $sekolah"),
+                    if (kualitas.isNotEmpty) Text("Kualitas: $kualitas"),
+                  ],
                 ),
               ),
-              Text(text, style: theme.textTheme.bodyMedium),
-            ],
-          ),
-        ),
-      ],
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
