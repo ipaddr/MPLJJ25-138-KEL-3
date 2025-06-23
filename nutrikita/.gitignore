@@ -1,45 +1,130 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
+.flutter-plugins
+.dart_tool/
+.packages
+build/
+*.iml
+*.iws
+*.ipr
+.idea/libraries/
+.vscode/launch.json # Biasanya launch.json bisa spesifik user
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+android/.gradle/
+android/app/build/
+android/build/
+android/app/.idea/
+android/local.properties
+android/*.keystore
+android/key.properties
+android/debug.keystore
+android/app/google-services.json # Jika tidak ingin dibagikan
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+
+ios/.symlinks/
+ios/.flutter-plugins-dependencies
+ios/.flutter-plugins
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Pods/
+ios/.bundle/
+ios/.vscode/
+ios/build/
+ios/*.xcodeproj/project.xcworkspace/
+ios/*.xcodeproj/xcshareddata/
+ios/*.xcworkspace/
+ios/DerivedData/
+
+.dart_tool/
+.packages
+.env # Variabel lingkungan, jangan di-commit
+
+*.log
+
 .pub-cache/
-.pub/
-/build/
 
-# Symbolication related
-app.*.symbols
+.idea/
+.vscode/
 
-# Obfuscation related
-app.*.map.json
+web/
+linux/build/
+macos/build/
+windows/build/
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# General OS files
+.DS_Store
+*.swp
+*~
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store/
+
+.env
+.env.development
+.env.production
+.env.local
+.env.*.local
+.env.test
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+pids
+*.pid
+*.sock
+
+*.sqlite
+*.sqlite3
+*.db
+*.mdb
+
+uploads/
+public/uploads/ # Jika Anda punya folder upload di public
+
+dist/
+build/
+tmp/
+temp/
+
+*.js.map
+*.ts.map
+
+.DS_Store
+Thumbs.db
+
+*.pem
+*.key
+*.pfx
+*.jks
+
+coverage/
+
+.cache/
+.eslintcache
+.nyc_output/
+.npm/
+.yarn/
