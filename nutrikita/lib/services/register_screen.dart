@@ -15,6 +15,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String? selectedRole;
+  final List<String> roles = ['siswa', 'sekolah', 'ortu', 'pemerintah'];
+
   bool isLoading = false;
 
   @override
@@ -32,26 +35,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    if (nama.isEmpty || nisn.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Semua field harus diisi')));
+    if (nama.isEmpty || nisn.isEmpty || email.isEmpty || password.isEmpty || selectedRole == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon lengkapi semua data termasuk Role')),
+      );
       return;
     }
 
     setState(() => isLoading = true);
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = FirebaseAuth.instance.currentUser;
+      final user = credential.user;
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'uid': user.uid,
           'nama': nama,
           'nisn': nisn,
           'email': email,
+          'role': selectedRole,
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
@@ -92,47 +97,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
                 Card(
                   elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 32,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildLabel(theme, 'Nama Lengkap'),
-                        _buildInputField(
-                          controller: namaController,
-                          hintText: 'Masukkan nama lengkap Anda',
-                        ),
+                        _buildInputField(controller: namaController, hintText: 'Masukkan nama lengkap Anda'),
+
                         _buildLabel(theme, 'NISN'),
-                        _buildInputField(
-                          controller: nisnController,
-                          hintText: 'Masukkan NISN Anda',
-                          keyboardType: TextInputType.number,
-                        ),
+                        _buildInputField(controller: nisnController, hintText: 'Masukkan NISN Anda', keyboardType: TextInputType.number),
+
                         _buildLabel(theme, 'Email'),
-                        _buildInputField(
-                          controller: emailController,
-                          hintText: 'Masukkan email Anda',
-                          keyboardType: TextInputType.emailAddress,
-                        ),
+                        _buildInputField(controller: emailController, hintText: 'Masukkan email Anda', keyboardType: TextInputType.emailAddress),
+
                         _buildLabel(theme, 'Kata Sandi'),
                         TextFormField(
                           controller: passwordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Buat kata sandi Anda',
-                          ),
+                          decoration: const InputDecoration(hintText: 'Buat kata sandi Anda'),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Minimal 8 karakter',
-                          style: theme.textTheme.bodySmall,
+                        Text('Minimal 8 karakter', style: theme.textTheme.bodySmall),
+
+                        const SizedBox(height: 16),
+                        _buildLabel(theme, 'Pilih Role'),
+                        DropdownButtonFormField<String>(
+                          value: selectedRole,
+                          hint: const Text('Pilih role pengguna'),
+                          items: roles.map((role) => DropdownMenuItem(
+                            value: role,
+                            child: Text(role.toUpperCase()),
+                          )).toList(),
+                          onChanged: (val) => setState(() => selectedRole = val),
+                          decoration: const InputDecoration(border: OutlineInputBorder()),
                         ),
+
                         const SizedBox(height: 32),
                         SizedBox(
                           width: double.infinity,
@@ -146,17 +147,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             onPressed: isLoading ? null : _register,
-                            child:
-                                isLoading
-                                    ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                    : const Text(
-                                      'DAFTAR SEKARANG',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text('DAFTAR SEKARANG', style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -170,9 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'Sudah punya akun? ',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onBackground,
-                      ),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onBackground),
                       children: [
                         TextSpan(
                           text: 'Masuk disini',

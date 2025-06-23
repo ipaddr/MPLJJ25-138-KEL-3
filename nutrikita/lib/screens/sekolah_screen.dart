@@ -124,12 +124,12 @@ class _SekolahDashboardContent extends StatefulWidget {
 }
 
 class _SekolahDashboardContentState extends State<_SekolahDashboardContent> {
-  int totalInput = 0;
-  int sehatCount = 0;
-  int tidakSehatCount = 0;
-  double protein = 0.6;
-  double lemak = 0.4;
-  double karbo = 0.5;
+  int totalSiswa = 0;
+  double rataKalori = 0;
+  double rataProtein = 0;
+  double rataKarbo = 0;
+  double rataLemak = 0;
+  double persentaseGiziBaik = 0;
 
   @override
   void initState() {
@@ -140,51 +140,67 @@ class _SekolahDashboardContentState extends State<_SekolahDashboardContent> {
   Future<void> _loadData() async {
     final snapshot = await FirebaseFirestore.instance.collection('input_makanan').get();
     final data = snapshot.docs;
-    int sehat = 0;
-    int tidakSehat = 0;
+
+    Map<String, List<Map<String, dynamic>>> siswaMakanan = {};
 
     for (var doc in data) {
-      final catatan = doc['catatan']?.toString().toLowerCase() ?? '';
-      if (catatan.contains('sehat') || catatan.contains('bergizi')) {
-        sehat++;
-      } else {
-        tidakSehat++;
+      final uid = doc['uid'] ?? '';
+      if (!siswaMakanan.containsKey(uid)) {
+        siswaMakanan[uid] = [];
       }
+      siswaMakanan[uid]!.add(doc.data());
+    }
+
+    int total = siswaMakanan.length;
+    double totalKalori = 0;
+    double totalProtein = 0;
+    double totalKarbo = 0;
+    double totalLemak = 0;
+    int totalGiziBaik = 0;
+
+    for (var makanan in siswaMakanan.values) {
+      double kal = 0, pro = 0, kar = 0, lem = 0;
+      for (var item in makanan) {
+        kal += (item['kalori'] ?? 0).toDouble();
+        pro += (item['protein'] ?? 0).toDouble();
+        kar += (item['karbohidrat'] ?? 0).toDouble();
+        lem += (item['lemak'] ?? 0).toDouble();
+      }
+      totalKalori += kal / makanan.length;
+      totalProtein += pro / makanan.length;
+      totalKarbo += kar / makanan.length;
+      totalLemak += lem / makanan.length;
+      if ((kal / makanan.length) >= 1500) totalGiziBaik++;
     }
 
     setState(() {
-      totalInput = data.length;
-      sehatCount = sehat;
-      tidakSehatCount = tidakSehat;
-      protein = sehat / (sehat + tidakSehat + 1);
-      lemak = tidakSehat / (sehat + tidakSehat + 1);
-      karbo = 1 - protein - lemak;
+      totalSiswa = total;
+      rataKalori = total == 0 ? 0 : totalKalori / total;
+      rataProtein = total == 0 ? 0 : totalProtein / total;
+      rataKarbo = total == 0 ? 0 : totalKarbo / total;
+      rataLemak = total == 0 ? 0 : totalLemak / total;
+      persentaseGiziBaik = total == 0 ? 0 : totalGiziBaik / total;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoCard(theme),
-                  const SizedBox(height: 24),
-                  _buildPieChart(theme),
-                  const SizedBox(height: 24),
-                  _buildNutritionProgress(theme),
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
-          ),
-        ],
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoCard(theme),
+            const SizedBox(height: 24),
+            _buildStatusGiziCard(theme, persentaseGiziBaik),
+            const SizedBox(height: 24),
+            _buildBarChart(theme),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
   }
@@ -199,48 +215,44 @@ class _SekolahDashboardContentState extends State<_SekolahDashboardContent> {
           children: [
             Row(
               children: [
-                const Icon(Icons.info_outline, color: Colors.orange),
+                const Icon(Icons.people, color: Colors.teal),
                 const SizedBox(width: 8),
-                Text('Pantau Gizi Siswa',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Data Gizi Siswa', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 8),
-            Text('Jumlah input makanan yang terekam: $totalInput',
-                style: theme.textTheme.bodyMedium),
+            Text('Total siswa input: $totalSiswa', style: theme.textTheme.bodyMedium),
+            Text('Rata-rata Kalori: ${rataKalori.toStringAsFixed(2)} kkal', style: theme.textTheme.bodyMedium),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPieChart(ThemeData theme) {
-    if (sehatCount + tidakSehatCount == 0) {
-      return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.bar_chart, color: Colors.teal),
-                  const SizedBox(width: 8),
-                  Text('Persentase Gizi Siswa',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Center(
-                child: Text('Belum ada data gizi siswa.', style: TextStyle(color: Colors.grey)),
-              ),
-            ],
-          ),
+  Widget _buildStatusGiziCard(ThemeData theme, double persentase) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            const Icon(Icons.health_and_safety, color: Colors.green),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Status Gizi Baik', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text('${(persentase * 100).toStringAsFixed(0)}% siswa dalam status gizi baik', style: theme.textTheme.bodyMedium),
+              ],
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
+  Widget _buildBarChart(ThemeData theme) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -250,106 +262,53 @@ class _SekolahDashboardContentState extends State<_SekolahDashboardContent> {
           children: [
             Row(
               children: [
-                const Icon(Icons.bar_chart, color: Colors.teal),
+                const Icon(Icons.bar_chart, color: Colors.orange),
                 const SizedBox(width: 8),
-                Text('Persentase Gizi Siswa',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Rata-rata Nutrisi per Siswa', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 160,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  PieChart(
-                    PieChartData(
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 40,
-                      sections: [
-                        if (sehatCount > 0)
-                          PieChartSectionData(
-                            value: sehatCount.toDouble(),
-                            color: Colors.green,
-                            title: '$sehatCount Sehat',
-                            radius: 50,
-                            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                        if (tidakSehatCount > 0)
-                          PieChartSectionData(
-                            value: tidakSehatCount.toDouble(),
-                            color: Colors.red,
-                            title: '$tidakSehatCount Tidak',
-                            radius: 50,
-                            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.health_and_safety, color: Colors.grey),
-                      Text(
-                        '${((sehatCount / (sehatCount + tidakSehatCount)) * 100).toStringAsFixed(0)}% Sehat',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNutrisiBar('Protein', rataProtein, Colors.blue),
+                _buildNutrisiBar('Karbo', rataKarbo, Colors.purple),
+                _buildNutrisiBar('Lemak', rataLemak, Colors.redAccent),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNutrisiBar(String label, double value, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 30,
+          height: 100,
+          alignment: Alignment.bottomCenter,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: value / 100,
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: 30,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNutritionProgress(ThemeData theme) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.local_dining, color: Colors.brown),
-                const SizedBox(width: 8),
-                Text('Nutrisi Paling Dibutuhkan',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _nutrisiRow(theme, 'Protein 🍖', protein, Colors.green),
-            _nutrisiRow(theme, 'Lemak 🧁', lemak, Colors.amber),
-            _nutrisiRow(theme, 'Karbohidrat 🍚', karbo, Colors.lightBlue),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _nutrisiRow(ThemeData theme, String label, double value, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          SizedBox(width: 120, child: Text(label, style: theme.textTheme.bodyMedium)),
-          Expanded(
-            child: LinearProgressIndicator(
-              value: value,
-              color: color,
-              backgroundColor: color.withOpacity(0.2),
-              minHeight: 10,
-              borderRadius: BorderRadius.circular(8),
-            ),
           ),
-          const SizedBox(width: 12),
-          Text('${(value * 100).toInt()}%', style: theme.textTheme.bodySmall),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        Text(label),
+        Text('${value.toStringAsFixed(1)} g'),
+      ],
     );
   }
 }

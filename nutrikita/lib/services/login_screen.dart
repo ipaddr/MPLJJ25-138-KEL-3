@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,45 +12,60 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? selectedRole;
+
+  bool isLoading = false;
 
   void _login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || selectedRole == null) {
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Isi semua data dan pilih peran')),
+        const SnackBar(content: Text('Email dan password harus diisi')),
       );
       return;
     }
 
+    setState(() => isLoading = true);
+
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      // Login ke Firebase
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // Navigasi sesuai role
-      if (selectedRole == 'Siswa') {
+
+      final uid = userCredential.user?.uid;
+      if (uid == null) throw Exception('User tidak ditemukan');
+
+      // Ambil data user dari Firestore
+      final docSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (!docSnapshot.exists || !docSnapshot.data()!.containsKey('role')) {
+        throw Exception('Role pengguna tidak ditemukan. Hubungi admin.');
+      }
+
+      final role = docSnapshot.data()!['role'];
+
+      // Arahkan ke screen sesuai role
+      if (role == 'siswa') {
         Navigator.pushReplacementNamed(context, '/siswa');
-      } else if (selectedRole == 'Orang Tua') {
+      } else if (role == 'ortu') {
         Navigator.pushReplacementNamed(context, '/ortu');
-      } else if (selectedRole == 'Sekolah') {
+      } else if (role == 'sekolah') {
         Navigator.pushReplacementNamed(context, '/sekolah');
-      } else if (selectedRole == 'Pemerintah') {
+      } else if (role == 'pemerintah') {
         Navigator.pushReplacementNamed(context, '/pemerintah');
+      } else {
+        throw Exception('Peran tidak dikenali: $role');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login gagal: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login gagal: $e')),
+      );
+    } finally {
+      setState(() => isLoading = false);
     }
-  }
-
-  void _loginWithGoogle() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login dengan Google (simulasi)')),
-    );
   }
 
   @override
@@ -98,33 +114,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedRole,
-                decoration: InputDecoration(
-                  labelText: 'Pilih Peran',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'Siswa', child: Text('Siswa')),
-                  DropdownMenuItem(
-                    value: 'Orang Tua',
-                    child: Text('Orang Tua'),
-                  ),
-                  DropdownMenuItem(value: 'Sekolah', child: Text('Sekolah')),
-                  DropdownMenuItem(
-                    value: 'Pemerintah',
-                    child: Text('Pemerintah'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedRole = value;
-                  });
-                },
-              ),
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
@@ -136,38 +125,17 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: _login,
-                  child: const Text('Login', style: TextStyle(fontSize: 16)),
+                  onPressed: isLoading ? null : _login,
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Login', style: TextStyle(fontSize: 16)),
                 ),
               ),
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: _loginWithGoogle,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.account_circle),
-                      SizedBox(width: 10),
-                      Text('Masuk dengan Google'),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
               TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
+                onPressed: () => Navigator.pushNamed(context, '/register'),
                 child: const Text('Belum punya akun? Daftar di sini'),
               ),
             ],

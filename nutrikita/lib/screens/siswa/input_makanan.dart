@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 
 class InputMakananScreen extends StatefulWidget {
   const InputMakananScreen({super.key});
@@ -17,18 +18,15 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
   String? _selectedUnit;
   String? _selectedFoodSource;
   Uint8List? _imageBytes;
+  double? kalori;
 
   final TextEditingController makananController = TextEditingController();
   final TextEditingController porsiController = TextEditingController();
   final TextEditingController catatanController = TextEditingController();
 
   final List<String> _mealTimes = [
-    'Sarapan',
-    'Makan Siang',
-    'Makan Malam',
-    'Camilan Pagi',
-    'Camilan Sore',
-    'Lainnya',
+    'Sarapan', 'Makan Siang', 'Makan Malam',
+    'Camilan Pagi', 'Camilan Sore', 'Lainnya',
   ];
 
   final List<String> _units = [
@@ -45,6 +43,37 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
       setState(() {
         _imageBytes = result.files.single.bytes;
       });
+    }
+  }
+
+  Future<void> _hitungKalori() async {
+    final namaMakanan = makananController.text.trim();
+    if (namaMakanan.isEmpty) return;
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://trackapi.nutritionix.com/v2/natural/nutrients'),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-app-id': '9122dd4c',
+          'x-app-key': '767d25a287df998aa5da6767df97ad2f',
+        },
+        body: jsonEncode({'query': namaMakanan}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final firstFood = data['foods'][0];
+        setState(() {
+          kalori = firstFood['nf_calories']?.toDouble();
+        });
+      } else {
+        throw Exception('Gagal ambil data kalori');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal hitung kalori: $e')),
+      );
     }
   }
 
@@ -74,6 +103,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         'sumber': _selectedFoodSource,
         'catatan': catatanController.text,
         'foto_base64': base64Image,
+        'kalori': kalori ?? 0,
         'created_at': FieldValue.serverTimestamp(),
       });
 
@@ -89,6 +119,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         _selectedUnit = null;
         _selectedFoodSource = null;
         _imageBytes = null;
+        kalori = null;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,15 +139,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFDF7),
       appBar: AppBar(
-        title: const Text('Input Makanan', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFFA8D5BA),
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Input Makanan'),
+        backgroundColor: Colors.teal[300],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -124,86 +150,81 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDropdown('Waktu Makan', 'Pilih waktu makan', _selectedMealTime, _mealTimes, (val) => setState(() => _selectedMealTime = val)),
-                      const SizedBox(height: 16),
-                      _buildTextField('Makanan / Minuman', 'Masukkan makanan / minuman', 3, makananController),
-                      const SizedBox(height: 16),
-                      Text('Ukuran Porsi', style: theme.textTheme.labelLarge),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                              controller: porsiController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(hintText: 'Banyak', border: OutlineInputBorder()),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 2,
-                            child: DropdownButtonFormField<String>(
-                              decoration: const InputDecoration(hintText: 'Satuan', border: OutlineInputBorder()),
-                              value: _selectedUnit,
-                              items: _units.map((unit) => DropdownMenuItem(value: unit, child: Text(unit))).toList(),
-                              onChanged: (val) => setState(() => _selectedUnit = val),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDropdown('Sumber Makanan', 'Pilih sumber makanan', _selectedFoodSource, _foodSources, (val) => setState(() => _selectedFoodSource = val)),
-                      const SizedBox(height: 16),
-                      Text('Foto Makanan', style: theme.textTheme.labelLarge),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.grey.shade100,
-                          ),
-                          child: _imageBytes == null
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add_photo_alternate_outlined, color: Colors.grey.shade600, size: 40),
-                                    const SizedBox(height: 8),
-                                    Text('Tambahkan foto makanan', style: TextStyle(color: Colors.grey.shade600)),
-                                  ],
-                                )
-                              : Image.memory(_imageBytes!, height: 150, fit: BoxFit.cover),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField('Catatan', 'Masukkan keterangan tambahan', 3, catatanController),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDD9D4B),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: _simpanData,
-                          child: const Text('Simpan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
-                        ),
-                      ),
-                    ],
+              _buildDropdown('Waktu Makan', 'Pilih waktu makan', _selectedMealTime, _mealTimes, (val) => setState(() => _selectedMealTime = val)),
+              const SizedBox(height: 16),
+
+              _buildTextField('Nama Makanan / Minuman', 'Contoh: Nasi Goreng Ayam', 1, makananController),
+              const SizedBox(height: 12),
+
+              Text('Upload Foto Makanan', style: theme.textTheme.labelLarge),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.upload),
+                    label: const Text('Pilih Gambar'),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.teal[300]),
                   ),
+                  const SizedBox(width: 12),
+                  if (_imageBytes != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.memory(_imageBytes!, width: 100, height: 100, fit: BoxFit.cover),
+                    )
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              Text('Ukuran Porsi', style: theme.textTheme.labelLarge),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: porsiController,
+                      decoration: const InputDecoration(hintText: 'Banyak', border: OutlineInputBorder()),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedUnit,
+                      items: _units.map((unit) => DropdownMenuItem(value: unit, child: Text(unit))).toList(),
+                      onChanged: (val) => setState(() => _selectedUnit = val),
+                      decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Satuan'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              _buildDropdown('Sumber Makanan', 'Pilih sumber makanan', _selectedFoodSource, _foodSources, (val) => setState(() => _selectedFoodSource = val)),
+              const SizedBox(height: 16),
+
+              _buildTextField('Catatan Tambahan', 'Misal: tidak pakai sambal', 3, catatanController),
+              const SizedBox(height: 16),
+
+              ElevatedButton(
+                onPressed: _hitungKalori,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange[300]),
+                child: const Text('Hitung Kalori', style: TextStyle(color: Colors.white)),
+              ),
+              if (kalori != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text('Estimasi Kalori: ${kalori!.toStringAsFixed(2)} kkal', style: theme.textTheme.bodyMedium),
+                ),
+
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _simpanData,
+                  icon: const Icon(Icons.save),
+                  label: const Text('Simpan Data'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
                 ),
               ),
             ],
@@ -217,7 +238,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        Text(label),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           decoration: InputDecoration(hintText: hint, border: const OutlineInputBorder()),
@@ -233,7 +254,7 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        Text(label),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
