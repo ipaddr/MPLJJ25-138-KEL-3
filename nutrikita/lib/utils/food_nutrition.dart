@@ -63,24 +63,13 @@ FoodNutrient parseFoodNutrient(Map<String, dynamic> foodJson) {
   return FoodNutrient.fromJson(foodJson);
 }
 
-  Future<String> translateToEnglish(String text) async {
-    final url = Uri.parse('http://localhost:3001/translate');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'q': text,
-        'source': 'id',
-        'target': 'en',
-        'format': 'text',
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['translatedText'] ?? text;
-    } else {
-      return text;
-    }
+Future<String> translateToEnglish(String text) async {
+  final url = Uri.parse('https://api.mymemory.translated.net/get?q=$text&langpair=id|en');
+  final response = await http.get(url);
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['responseData']['translatedText'] ?? text;
   }
+  return text;
+}
 
