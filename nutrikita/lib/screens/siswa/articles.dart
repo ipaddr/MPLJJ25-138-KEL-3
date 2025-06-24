@@ -1,5 +1,3 @@
-// File: lib/screens/siswa/articles.dart
-
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +12,9 @@ class ArticlesScreen extends StatefulWidget {
 }
 
 class _ArticlesScreenState extends State<ArticlesScreen> {
-  final List<String> _categories = ['Semua', 'Resep Makanan', 'Gaya Hidup', 'Olahraga'];
+  final List<String> _categories = ['Semua', 'Sarapan', 'Gaya Hidup', 'Olahraga', 'Tips Gizi'];
   String _selectedCategory = 'Semua';
+  String _searchKeyword = '';
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,6 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                     decoration: InputDecoration(
                       hintText: 'Cari',
                       prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant),
-                      suffixIcon: Icon(Icons.clear, color: theme.colorScheme.onSurfaceVariant),
                       contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                       filled: true,
                       fillColor: theme.colorScheme.surface,
@@ -60,7 +58,9 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                     ),
                     style: theme.textTheme.bodyMedium,
                     onChanged: (value) {
-                      // Tambahkan fitur pencarian nanti jika perlu
+                      setState(() {
+                        _searchKeyword = value.toLowerCase();
+                      });
                     },
                   ),
                 ),
@@ -87,12 +87,16 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                           selectedColor: theme.colorScheme.primaryContainer,
                           backgroundColor: theme.colorScheme.surfaceVariant,
                           labelStyle: theme.textTheme.labelMedium?.copyWith(
-                            color: isSelected ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurfaceVariant,
+                            color: isSelected
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.onSurfaceVariant,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-                            side: isSelected ? BorderSide.none : BorderSide(color: theme.colorScheme.outline),
+                            side: isSelected
+                                ? BorderSide.none
+                                : BorderSide(color: theme.colorScheme.outline),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
@@ -121,17 +125,24 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                         return const Text('Belum ada artikel.');
                       }
 
-                      // Filter berdasarkan kategori jika bukan "Semua"
-                      final filteredDocs = _selectedCategory == 'Semua'
-                          ? snapshot.data!.docs
-                          : snapshot.data!.docs.where((doc) {
-                              final data = doc.data() as Map<String, dynamic>;
-                              final tags = data['tags'] as List<dynamic>? ?? [];
-                              return tags.contains(_selectedCategory);
-                            }).toList();
+                      final filteredDocs = snapshot.data!.docs.where((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final title = (data['title'] ?? '').toString().toLowerCase();
+                        final content = (data['content'] ?? '').toString().toLowerCase();
+                        final tags = List<String>.from(data['tags'] ?? []).map((t) => t.toLowerCase()).toList();
+
+                        final matchesCategory = _selectedCategory == 'Semua' ||
+                            tags.contains(_selectedCategory.toLowerCase());
+
+                        final matchesSearch = _searchKeyword.isEmpty ||
+                            title.contains(_searchKeyword) ||
+                            content.contains(_searchKeyword);
+
+                        return matchesCategory && matchesSearch;
+                      }).toList();
 
                       if (filteredDocs.isEmpty) {
-                        return const Text('Artikel tidak ditemukan untuk kategori ini.');
+                        return const Text('Artikel tidak ditemukan.');
                       }
 
                       return Column(
@@ -188,7 +199,6 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
             },
           );
         } catch (e) {
-          // Jika decode gagal, tampilkan placeholder
           imageWidget = _placeholderImage(theme);
         }
       } else {

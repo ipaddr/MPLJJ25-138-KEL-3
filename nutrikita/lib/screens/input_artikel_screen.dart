@@ -28,8 +28,6 @@ class _InputArtikelScreenState extends State<InputArtikelScreen> {
       if (result != null && result.files.single.bytes != null) {
         setState(() {
           _selectedImageBytes = result.files.single.bytes;
-
-          
           _base64Image = 'data:image/jpeg;base64,${base64Encode(_selectedImageBytes!)}';
         });
       }
@@ -55,13 +53,19 @@ class _InputArtikelScreenState extends State<InputArtikelScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final List<String> tagList = _tagController.text
+          .split(',')
+          .map((tag) => tag.trim())
+          .where((tag) => tag.isNotEmpty)
+          .toList();
+
       await FirebaseFirestore.instance.collection('artikel').add({
         'title': _judulController.text.trim(),
         'content': _isiController.text.trim(),
         'author': _penulisController.text.trim(),
         'date': DateTime.now().toIso8601String().split('T').first,
-        'tags': [_tagController.text.trim()],
-        'imageUrl': _base64Image, // ✅ Disimpan di field yang benar
+        'tags': tagList,
+        'imageUrl': _base64Image,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,7 +138,8 @@ class _InputArtikelScreenState extends State<InputArtikelScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: _tagController,
-              decoration: const InputDecoration(labelText: "Tag (misal: Sarapan)"),
+              decoration: const InputDecoration(
+                  labelText: "Tag (pisahkan dengan koma, contoh: Sarapan, Gaya Hidup)"),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 16),
