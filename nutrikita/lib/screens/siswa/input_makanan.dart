@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:nutrikita/utils/food_nutrition.dart';
+import 'package:nutrikita/utils/food_nutrition.dart'; // Pastikan path ini benar
 
 class InputMakananScreen extends StatefulWidget {
   const InputMakananScreen({super.key});
@@ -19,9 +19,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
   String? _selectedUnit;
   String? _selectedFoodSource;
   Uint8List? _imageBytes;
-  double? kalori;
-  FoodNutrient? foodNutrient;
-  FoodNutrient? userNutrient;
+  // kalori ini tidak digunakan, bisa dihapus atau diganti dengan userNutrient.calories
+  // double? kalori;
+  FoodNutrient? foodNutrient; // Base nutrition from API per serving
+  FoodNutrient? userNutrient; // Calculated nutrition based on user's input
   String? unitWarning;
 
   final TextEditingController makananController = TextEditingController();
@@ -68,20 +69,40 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     final namaMakanan = makananController.text.trim();
     final porsiText = porsiController.text.trim();
     final satuan = _selectedUnit;
-    if (namaMakanan.isEmpty || porsiText.isEmpty || satuan == null) return;
+
+    if (namaMakanan.isEmpty || porsiText.isEmpty || satuan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nama Makanan, Porsi, dan Satuan wajib diisi.'),
+        ),
+      );
+      return;
+    }
 
     double? jumlah;
     try {
       jumlah = double.parse(porsiText);
     } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Jumlah porsi harus berupa angka')),
+        const SnackBar(content: Text('Jumlah porsi harus berupa angka.')),
       );
       return;
     }
 
+    // Reset previous nutrition data and warning
+    setState(() {
+      foodNutrient = null;
+      userNutrient = null;
+      unitWarning = null;
+    });
+
     try {
+      // Periksa apakah nama makanan memerlukan terjemahan ke Inggris
+      // Asumsi 'translateToEnglish' ada di food_nutrition.dart
       final translatedName = await translateToEnglish(namaMakanan);
+      // Jika Nutritionix API hanya menerima bahasa Inggris, pastikan terjemahan ini efektif
+      // Jika nama makanan seperti "Nasi Goreng" sudah dikenal Nutritionix, terjemahan mungkin tidak perlu.
+      // Anda bisa menambahkan logika pengecekan bahasa di sini jika diperlukan.
 
       final response = await http.post(
         Uri.parse('https://trackapi.nutritionix.com/v2/natural/nutrients'),
@@ -95,23 +116,47 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final firstFood = data['foods'][0];
-        final baseNutrient = FoodNutrient.fromJson(firstFood);
-        double beratInput = convertToGram(jumlah, satuan);
-        String? warning;
-        if (!unitToGram.containsKey(satuan)) {
-          warning =
-              'Satuan "$satuan" tidak bisa dikonversi otomatis ke gram. Masukkan berat dalam gram untuk hasil akurat.';
+        if (data['foods'] != null && data['foods'].isNotEmpty) {
+          final firstFood = data['foods'][0];
+          final baseNutrient = FoodNutrient.fromJson(firstFood);
+
+          double beratInput = convertToGram(jumlah, satuan);
+          String? warning;
+
+          // Jika satuan tidak ada di map konversi, berikan warning
+          if (!unitToGram.containsKey(satuan)) {
+            warning =
+                'Satuan "$satuan" tidak bisa dikonversi otomatis. Hasil mungkin tidak akurat. Masukkan berat dalam gram untuk hasil akurat.';
+          } else if (satuan == 'lainnya' && (jumlah == 0 || beratInput == 0)) {
+            // Jika "lainnya" dan jumlahnya 0, ingatkan untuk input gram yang valid
+            warning =
+                'Untuk satuan "lainnya", pastikan Anda memasukkan berat dalam gram yang valid.';
+          }
+
+          setState(() {
+            foodNutrient = baseNutrient;
+            userNutrient = calculateNutrientByWeight(baseNutrient, beratInput);
+            unitWarning = warning;
+          });
+        } else {
+          throw Exception('Data nutrisi tidak ditemukan untuk makanan ini.');
         }
-        setState(() {
-          foodNutrient = baseNutrient;
-          userNutrient = calculateNutrientByWeight(baseNutrient, beratInput);
-          unitWarning = warning;
-        });
       } else {
-        throw Exception('Gagal ambil data nutrisi');
+        // Coba baca error message dari API jika ada
+        String errorMessage =
+            'Gagal ambil data nutrisi. Status Code: ${response.statusCode}';
+        try {
+          final errorData = jsonDecode(response.body);
+          if (errorData['message'] != null) {
+            errorMessage = errorData['message'];
+          }
+        } catch (_) {
+          // Do nothing, use default message
+        }
+        throw Exception(errorMessage);
       }
     } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Gagal hitung nutrisi: $e')));
@@ -123,21 +168,37 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         makananController.text.isEmpty ||
         porsiController.text.isEmpty ||
         _selectedUnit == null ||
-        _selectedFoodSource == null) {
+        _selectedFoodSource == null ||
+        userNutrient ==
+            null // Pastikan nutrisi sudah dihitung
+            ) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mohon lengkapi semua data')),
+        const SnackBar(
+          content: Text(
+            'Mohon lengkapi semua data dan hitung nutrisi terlebih dahulu.',
+          ),
+        ),
       );
       return;
     }
 
     try {
       final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Anda harus login untuk menyimpan data.'),
+          ),
+        );
+        return;
+      }
+
       final base64Image =
           _imageBytes != null ? base64Encode(_imageBytes!) : null;
 
       await FirebaseFirestore.instance.collection('input_makanan').add({
-        'uid': user?.uid,
-        'email': user?.email,
+        'uid': user.uid, // Gunakan user.uid langsung
+        'email': user.email,
         'waktu_makan': _selectedMealTime,
         'nama_makanan': makananController.text,
         'porsi': porsiController.text,
@@ -145,14 +206,19 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         'sumber': _selectedFoodSource,
         'catatan': catatanController.text,
         'foto_base64': base64Image,
-        'kalori': kalori ?? 0,
+        'kalori': userNutrient!.calories, // Pastikan tidak null
+        'karbohidrat': userNutrient!.carbs,
+        'protein': userNutrient!.protein,
+        'lemak': userNutrient!.fat,
         'created_at': FieldValue.serverTimestamp(),
       });
 
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data makanan berhasil diinput!')),
       );
 
+      // Clear all fields and state after successful save
       makananController.clear();
       porsiController.clear();
       catatanController.clear();
@@ -161,12 +227,13 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
         _selectedUnit = null;
         _selectedFoodSource = null;
         _imageBytes = null;
-        kalori = null;
+        // kalori = null; // Ini tidak lagi digunakan
         foodNutrient = null;
         userNutrient = null;
         unitWarning = null;
       });
     } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data: $e')));
@@ -222,6 +289,8 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                     label: const Text('Pilih Gambar'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal[300],
+                      foregroundColor:
+                          Colors.white, // Ensure text color is visible
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -298,11 +367,9 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                 onPressed: _hitungNutrisi,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange[300],
+                  foregroundColor: Colors.white, // Ensure text color is visible
                 ),
-                child: const Text(
-                  'Hitung Nutrisi',
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: const Text('Hitung Nutrisi'),
               ),
               if (userNutrient != null)
                 Padding(
@@ -343,8 +410,11 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _simpanData,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan Data'),
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  label: const Text(
+                    'Simpan Data',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
                 ),
               ),
@@ -365,7 +435,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge,
+        ), // Added text style
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
@@ -394,7 +467,10 @@ class _InputMakananScreenState extends State<InputMakananScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge,
+        ), // Added text style
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
