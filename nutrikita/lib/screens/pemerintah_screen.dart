@@ -16,6 +16,8 @@ class _PemerintahScreenState extends State<PemerintahScreen> {
   int jumlahAnak = 0;
   int jumlahSekolah = 0;
   int jumlahFeedback = 0;
+  int jumlahGiziBurukMingguIni = 0;
+  int jumlahSekolahBelumInput = 0;
 
   Map<String, int> statusGizi = {'Baik': 0, 'Kurang': 0, 'Buruk': 0};
 
@@ -34,8 +36,20 @@ class _PemerintahScreenState extends State<PemerintahScreen> {
     final inputMakanan = await FirebaseFirestore.instance.collection('input_makanan').get();
 
     Map<String, int> gizi = {'Baik': 0, 'Kurang': 0, 'Buruk': 0};
+
+    DateTime now = DateTime.now();
+    DateTime sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+    int giziBurukMingguIni = 0;
+    Set<String> sekolahAktif = {};
+    Set<String> semuaSekolah = {};
+
     for (var item in inputMakanan.docs) {
-      final kalori = (item.data()['kalori'] ?? 0).toDouble();
+      final data = item.data();
+      final timestamp = (data['created_at'] as Timestamp?)?.toDate();
+      final kalori = (data['kalori'] ?? 0).toDouble();
+      final sekolah = data['sekolah'] ?? '';
+
       if (kalori >= 500) {
         gizi['Baik'] = gizi['Baik']! + 1;
       } else if (kalori >= 300) {
@@ -43,13 +57,23 @@ class _PemerintahScreenState extends State<PemerintahScreen> {
       } else {
         gizi['Buruk'] = gizi['Buruk']! + 1;
       }
+
+      if (timestamp != null && timestamp.isAfter(sevenDaysAgo)) {
+        if (kalori < 300) giziBurukMingguIni++;
+        if (sekolah.isNotEmpty) sekolahAktif.add(sekolah);
+      }
+      if (sekolah.isNotEmpty) semuaSekolah.add(sekolah);
     }
+
+    int sekolahBelumInput = semuaSekolah.length - sekolahAktif.length;
 
     setState(() {
       jumlahAnak = siswa.length;
       jumlahSekolah = sekolah.length;
       jumlahFeedback = feedbacks.size;
       statusGizi = gizi;
+      jumlahGiziBurukMingguIni = giziBurukMingguIni;
+      jumlahSekolahBelumInput = sekolahBelumInput;
     });
   }
 
@@ -66,6 +90,8 @@ class _PemerintahScreenState extends State<PemerintahScreen> {
         jumlahSekolah: jumlahSekolah,
         jumlahFeedback: jumlahFeedback,
         statusGizi: statusGizi,
+        jumlahGiziBurukMingguIni: jumlahGiziBurukMingguIni,
+        jumlahSekolahBelumInput: jumlahSekolahBelumInput,
       ),
       const ProfileScreen(),
     ];
@@ -75,8 +101,8 @@ class _PemerintahScreenState extends State<PemerintahScreen> {
       appBar: _selectedIndex == 0
           ? AppBar(
               automaticallyImplyLeading: false,
-              backgroundColor: theme.scaffoldBackgroundColor,
-              elevation: 0,
+              backgroundColor: theme.colorScheme.surface,
+              elevation: 1,
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline),
@@ -129,12 +155,16 @@ class _PemerintahDashboardContent extends StatelessWidget {
   final int jumlahSekolah;
   final int jumlahFeedback;
   final Map<String, int> statusGizi;
+  final int jumlahGiziBurukMingguIni;
+  final int jumlahSekolahBelumInput;
 
   const _PemerintahDashboardContent({
     required this.jumlahAnak,
     required this.jumlahSekolah,
     required this.jumlahFeedback,
     required this.statusGizi,
+    required this.jumlahGiziBurukMingguIni,
+    required this.jumlahSekolahBelumInput,
   });
 
   @override
@@ -151,7 +181,7 @@ class _PemerintahDashboardContent extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _buildInfoCard(theme, 'assets/icons/siswa.png', '$jumlahAnak', 'Jumlah Anak', theme.colorScheme.primary)),
+                Expanded(child: _buildInfoCard(theme, 'assets/icons/siswa.png', '$jumlahAnak', 'Jumlah Anak', theme.primaryColor)),
                 const SizedBox(width: 16),
                 Expanded(child: _buildInfoCard(theme, 'assets/icons/sekolah.png', '$jumlahSekolah', 'Jumlah Sekolah', Colors.orange)),
               ],
@@ -169,7 +199,7 @@ class _PemerintahDashboardContent extends StatelessWidget {
                     Row(children: [
                       Image.asset('assets/icons/status.png', height: 28),
                       const SizedBox(width: 8),
-                      Text('Status Umum Gizi Nasional', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                      Text('Status Gizi Nasional', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                     ]),
                     const Divider(height: 24),
                     _giziStatusItem(theme, '🟢 Baik', '${statusGizi['Baik']}'),
@@ -194,9 +224,8 @@ class _PemerintahDashboardContent extends StatelessWidget {
                       Text('Notifikasi Penting', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.error)),
                     ]),
                     const Divider(height: 24),
-                    const Text('⚠️ Data siswa dengan gizi buruk meningkat minggu ini'),
-                    const Text('📌 Sekolah yang belum mengirim data > 3 hari: 5 sekolah'),
-                    const Text('🥦 Konsumsi sayur naik 8% dibanding minggu lalu'),
+                    Text('⚠️ Siswa dengan gizi buruk minggu ini: $jumlahGiziBurukMingguIni', style: theme.textTheme.bodyMedium),
+                    Text('📌 Sekolah yang belum kirim data >3 hari: $jumlahSekolahBelumInput sekolah', style: theme.textTheme.bodyMedium),
                   ],
                 ),
               ),
@@ -226,14 +255,14 @@ class _PemerintahDashboardContent extends StatelessWidget {
     );
   }
 
-  Widget _giziStatusItem(ThemeData theme, String kategori, String persen) {
+  Widget _giziStatusItem(ThemeData theme, String kategori, String jumlah) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(kategori, style: theme.textTheme.bodyLarge),
-          Text(persen, style: theme.textTheme.bodyLarge),
+          Text(jumlah, style: theme.textTheme.bodyLarge),
         ],
       ),
     );

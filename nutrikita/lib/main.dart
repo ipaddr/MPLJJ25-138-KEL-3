@@ -4,20 +4,28 @@ import 'firebase_options.dart';
 
 import 'utils/app_theme.dart';
 
+// Services
 import 'services/welcome_screen.dart';
 import 'services/login_screen.dart';
 import 'services/register_screen.dart';
 
+// Siswa Screens
 import 'screens/siswa/dashboard.dart';
 import 'screens/siswa/input_makanan.dart';
 import 'screens/siswa/articles.dart';
 import 'screens/siswa/article_detail.dart';
 
+// Umum
 import 'screens/profile.dart';
+import 'screens/input_artikel_screen.dart';
+
+// Role-Based Screens
 import 'screens/pemerintah_screen.dart';
 import 'screens/sekolah_screen.dart';
 import 'screens/ortu_screen.dart';
-import 'screens/input_artikel_screen.dart'; 
+
+// AI Fitur
+import 'screens/seed_rekomendasi.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,12 +43,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NutriKita App',
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       routes: {
         '/': (context) => const WelcomeScreen(),
-        '/login': (context) => const LoginPage(),
+        '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+
+        // Siswa Routes
         '/dashboard': (context) => const DashboardScreen(),
         '/siswa': (context) => const DashboardScreen(),
         '/input_makanan': (context) => const InputMakananScreen(),
@@ -52,11 +62,18 @@ class MyApp extends StatelessWidget {
               tags: ['Contoh'],
               imageUrl: null,
             ),
+
+        // Umum
         '/input_artikel': (context) => const InputArtikelScreen(),
         '/profile': (context) => const ProfileScreen(),
+
+        // Role-Based
         '/pemerintah': (context) => const PemerintahScreen(),
         '/sekolah': (context) => const SekolahScreen(),
         '/ortu': (context) => const OrtuScreen(),
+
+        // Fitur AI
+        '/seed_rekomendasi': (context) => const SeedRekomendasiScreen(),
       },
     );
   }
